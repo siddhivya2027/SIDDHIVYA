@@ -141,34 +141,101 @@ h1, h2, h3 { letter-spacing: -0.015em; }
 .grid-fade { background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 44px 44px; mask-image: radial-gradient(ellipse at 50% 30%, #000 30%, transparent 75%); }
 .word-rotate > span { display: inline-block; animation: word-in 0.5s cubic-bezier(.2,.8,.2,1); }
 @keyframes word-in { from { transform: translateY(60%); opacity: 0; } }
-/* ---------- SIDDHIVYA theme: public website only (night plum, saffron, lotus, classical display) ---------- */
+/* ---------- SIDDHIVYA website theme (ink night, saffron, lotus; its own motion set) ---------- */
+/* Light is the default look; the dark look applies when the sun/moon button switches to dark. */
 .royal {
-  --bg: #0f0a14; --surface: #18111f; --raised: #221729;
-  --line: rgb(245 167 66 / 0.15); --line-strong: rgb(245 167 66 / 0.32);
-  --ink: #fbf3ea; --muted: #cbbcb3; --faint: #8f817c;
-  --accent: #f5a742; --accent-ink: #1f0d02; --accent-soft: rgb(245 167 66 / 0.12);
-  --ai: #e0609a; --ai-soft: rgb(224 96 154 / 0.16); --s-meta: #ffd9a0;
-  --g-light: #ffd59a; --g-deep: #c9561a;
-  --shadow: 0 1px 0 rgb(245 167 66 / 0.08) inset, 0 18px 40px -18px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(245 167 66 / 0.05);
-  color-scheme: dark; color: var(--ink);
-  background:
-    radial-gradient(1100px 520px at 50% -8%, rgb(245 167 66 / 0.13), transparent 70%),
-    radial-gradient(800px 520px at 100% 35%, rgb(224 96 154 / 0.11), transparent 70%),
-    radial-gradient(700px 500px at 0% 75%, rgb(120 60 160 / 0.10), transparent 70%),
-    var(--bg);
+  --bg: #fbf8f4; --surface: #ffffff; --raised: #f5efe8;
+  --line: rgb(28 19 32 / 0.10); --line-strong: rgb(28 19 32 / 0.20);
+  --ink: #1c1320; --muted: #5f5668; --faint: #8d8494;
+  --accent: #d0600e; --accent-ink: #1a0d02; --accent-soft: rgb(208 96 14 / 0.10);
+  --ai: #c2337a; --ai-soft: rgb(194 51 122 / 0.10); --s-meta: #b26a10;
+  --g-light: #f59a3c; --g-deep: #c2560c;
+  --glow-a: rgb(245 154 60 / 0.16); --glow-b: rgb(194 51 122 / 0.08);
+  --shadow: 0 1px 2px rgb(28 19 32 / 0.05), 0 18px 40px -20px rgb(80 40 20 / 0.25);
+  color-scheme: light; color: var(--ink);
+  background: radial-gradient(900px 600px at 85% -10%, rgb(194 51 122 / 0.08), transparent 60%), radial-gradient(800px 600px at -10% 40%, rgb(245 154 60 / 0.10), transparent 60%), var(--bg);
+  font-family: var(--font-royal), ui-sans-serif, system-ui, sans-serif;
 }
-.royal h1, .royal h2, .royal .font-royal { font-family: var(--font-royal), "Marcellus", Georgia, serif; font-weight: 400; letter-spacing: 0; }
-.royal h1 { line-height: 1.04; }
-.royal .text-gradient { background-image: linear-gradient(100deg, #e0609a 0%, #ffb867 30%, #f5a742 55%, #ffe3b8 75%, #e0609a 100%); }
-.royal .grid-fade { opacity: 0.5; }
-.royal .blob { opacity: 0.17; }
-.royal ::selection { background: rgb(245 167 66 / 0.35); color: #fff; }
-.btn-siddhi { background-image: linear-gradient(100deg, var(--g-light, #ffd59a), var(--accent) 50%, var(--g-deep, #c9561a)); }
-.lotus-pattern { background-image: radial-gradient(circle at 50% 100%, rgb(245 167 66 / 0.10) 0 22%, transparent 23%), radial-gradient(circle at 0% 50%, rgb(224 96 154 / 0.07) 0 18%, transparent 19%), radial-gradient(circle at 100% 50%, rgb(224 96 154 / 0.07) 0 18%, transparent 19%); background-size: 64px 64px; }
+.dark .royal {
+  --bg: #0b0a12; --surface: #13111c; --raised: #1b1826;
+  --line: rgb(238 234 242 / 0.11); --line-strong: rgb(238 234 242 / 0.22);
+  --ink: #efeaf3; --muted: #9a93ab; --faint: #6f6981;
+  --accent: #f5a742; --accent-ink: #1a0d02; --accent-soft: rgb(245 167 66 / 0.12);
+  --ai: #ec6fae; --ai-soft: rgb(236 111 174 / 0.14); --s-meta: #ffd9a0;
+  --g-light: #ffd59a; --g-deep: #e0782a;
+  --glow-a: rgb(245 167 66 / 0.10); --glow-b: rgb(236 111 174 / 0.05);
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 24px 60px -24px rgb(0 0 0 / 0.85);
+  color-scheme: dark; color: var(--ink);
+  background: radial-gradient(900px 600px at 85% -10%, rgb(236 111 174 / 0.10), transparent 60%), radial-gradient(800px 600px at -10% 40%, rgb(245 167 66 / 0.07), transparent 60%), var(--bg);
+  font-family: var(--font-royal), ui-sans-serif, system-ui, sans-serif;
+}
+.royal h1, .royal h2, .royal h3, .royal .font-royal { font-family: var(--font-royal), ui-sans-serif, sans-serif; font-weight: 700; letter-spacing: -0.03em; text-wrap: balance; }
+.royal h1 { line-height: 0.98; }
+.royal .em-s { font-family: var(--font-serif), Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.02em; background: linear-gradient(100deg, var(--g-light), var(--accent) 45%, var(--ai)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.08em; }
+.royal .eyebrow { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-strong); border-radius: 999px; padding: 5px 12px 5px 8px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; color: var(--ink); background: color-mix(in srgb, var(--surface) 60%, transparent); backdrop-filter: blur(6px); }
+.royal .eyebrow .live-dot { background: linear-gradient(135deg, var(--ai), var(--accent)); }
+.royal .mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+.royal .text-gradient { background-image: linear-gradient(100deg, var(--ai) 0%, #ffb867 35%, var(--accent) 60%, #ffe3b8 80%, var(--ai) 100%); }
+.royal .grid-fade { opacity: 0.3; }
+.royal .blob { opacity: 0.12; }
+.royal ::selection { background: rgb(245 167 66 / 0.35); }
+.btn-siddhi { background-image: linear-gradient(100deg, var(--g-light, #ffd59a), var(--accent) 50%, var(--g-deep, #e0782a)); }
+.lotus-pattern { background-image: radial-gradient(circle at 50% 100%, rgb(245 167 66 / 0.08) 0 22%, transparent 23%), radial-gradient(circle at 0% 50%, rgb(236 111 174 / 0.06) 0 18%, transparent 19%), radial-gradient(circle at 100% 50%, rgb(236 111 174 / 0.06) 0 18%, transparent 19%); background-size: 64px 64px; }
+
+/* lotus bloom canvas: stays soft behind the words on small screens */
+@media (max-width: 900px) { .lotus-field { opacity: 0.55; } }
+
+/* slot-machine word flip */
+.flip-words { display: inline-block; height: 1.12em; overflow: hidden; vertical-align: bottom; }
+.flip-track { display: flex; flex-direction: column; transition: transform 0.75s cubic-bezier(0.7, 0, 0.2, 1); }
+.flip-word { display: block; height: 1.12em; line-height: 1.12em; white-space: nowrap; filter: blur(6px); opacity: 0.25; transition: filter 0.6s, opacity 0.6s; background: linear-gradient(100deg, var(--g-light), var(--accent) 45%, var(--ai)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.flip-word.on { filter: none; opacity: 1; }
+
+/* headline words rising in */
+.rise-word { display: inline-block; animation: rise-word 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes rise-word { from { opacity: 0; transform: translateY(0.45em) rotate(3deg); filter: blur(8px); } }
+
+/* odometer */
+.odo { display: inline-flex; align-items: baseline; }
+.odo-col { display: inline-block; height: 1em; line-height: 1em; overflow: hidden; }
+.odo-reel { display: flex; flex-direction: column; transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.odo-reel > span { height: 1em; line-height: 1em; }
+
+/* spotlight border that follows the pointer */
+.spot { position: relative; isolation: isolate; border-radius: 24px; }
+.spot::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 2;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), var(--accent), var(--ai) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: var(--o, 0); transition: opacity 0.35s; }
+.spot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 1; background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), var(--accent-soft), transparent 60%); opacity: var(--o, 0); transition: opacity 0.35s; }
+.spot > * { border-radius: inherit; }
+
+/* magnetic buttons */
+.magnetic { transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
+
+/* soft light trailing the pointer */
+.cursor-glow { position: fixed; left: 0; top: 0; z-index: 0; width: 400px; height: 400px; border-radius: 999px; pointer-events: none; opacity: 0; transition: opacity 0.6s; background: radial-gradient(circle, var(--glow-a), var(--glow-b) 40%, transparent 70%); }
+
+/* speed marquee chips */
+.sm-chip { white-space: nowrap; border-radius: 999px; border: 1px solid var(--line-strong); padding: 10px 20px; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); background: color-mix(in srgb, var(--surface) 50%, transparent); }
+.sm-chip.alt { border-color: transparent; color: var(--muted); font-family: var(--font-serif), Georgia, serif; font-style: italic; font-weight: 400; font-size: 20px; }
+
+/* sideways-scroll cards grow as they reach the middle */
+.hcard { width: min(78vw, 400px); scroll-snap-align: center; transform: scale(calc(0.9 + 0.1 * var(--near, 1))); opacity: calc(0.55 + 0.45 * var(--near, 1)); transition: transform 0.15s linear; }
+@media (max-width: 899px) { .hcard { transform: none; opacity: 1; } }
+
+/* unfold: the preview lies back and rises flat as it scrolls in */
+.unfold { perspective: 1400px; }
+.unfold-inner { transform: rotateX(calc((1 - var(--p, 1)) * 26deg)) scale(calc(0.9 + 0.1 * var(--p, 1))) translateY(calc((1 - var(--p, 1)) * 40px)); transform-origin: 50% 100%; opacity: calc(0.35 + 0.65 * var(--p, 1)); }
+
+.live-dot { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: var(--ai); }
+.live-dot::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; border: 1px solid var(--accent); animation: live 1.8s ease-out infinite; }
+@keyframes live { from { transform: scale(0.6); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
+
 .gold-rule { height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
 .gold-frame { position: relative; }
 .gold-frame::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(140deg, rgb(255 213 154 / 0.7), rgb(224 96 154 / 0.10) 40%, rgb(245 167 66 / 0.08) 60%, rgb(255 213 154 / 0.6)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
 .shimmer { position: relative; overflow: hidden; }
 .shimmer::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%); transform: translateX(-120%); animation: shimmer 3.6s ease-in-out infinite; }
 @keyframes shimmer { 60%, 100% { transform: translateX(120%); } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .unfold-inner, .hcard { transform: none; opacity: 1; } .flip-word { filter: none; opacity: 1; } .rise-word { animation: none; } }

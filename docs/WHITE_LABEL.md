@@ -13,4 +13,9 @@ Everything below hides itself or shows a safe default until it is filled in.
 | Technology credit | `src/config/brand.ts` → `poweredBy` (set `name: ""` to hide) | "Technology by Entraiot Solutions" |
 
 Look and feel: colours in `src/app/globals.css` (`:root`, `.dark`, `.royal`), fonts in `src/app/site-fonts.ts`
-(Marcellus for headings, Plus Jakarta Sans for text), logo in `src/components/shell/sidebar.tsx` (`BrandMark`).
+(Bricolage Grotesque, Fraunces italic and JetBrains Mono on the website, Plus Jakarta Sans in the platform), logo in `src/components/shell/sidebar.tsx` (`BrandMark`).
+
+Motion (SIDDHIVYA's own set): `src/components/site/motion.tsx` — lotus bloom of glowing seeds in the hero (changes petals, scatters from the mouse),
+slot-machine word flip, rising headline words, rolling odometer numbers, two speed strips that lean with scroll, a pinned section
+where scrolling slides the service cards sideways, spotlight borders that follow the mouse, magnetic buttons, a soft cursor light
+and the unfolding dashboard. All of it stops for visitors who choose "reduce motion".

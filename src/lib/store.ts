@@ -39,7 +39,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 
 const initial = () => ({
   session: null as Session | null,
-  theme: "dark" as "dark" | "light",
+  theme: "light" as "dark" | "light",
   sidebarCollapsed: false,
   clientId: "aarvi",
   marketplace: "all" as MarketplaceFilter,
@@ -138,7 +138,8 @@ export const useStore = create<Data & Actions>()(
       name: "siddhivya-demo-v1",
       storage: createJSONStorage(() => safeStorage),
       skipHydration: true,
-      partialize: (s) => Object.fromEntries(Object.entries(s).filter(([k, v]) => k !== "hydrated" && typeof v !== "function")),
+      // "theme" is not saved: every visit opens in light mode, and the sun/moon button switches it for that visit.
+      partialize: (s) => Object.fromEntries(Object.entries(s).filter(([k, v]) => k !== "hydrated" && k !== "theme" && typeof v !== "function")),
     },
   ),
 );

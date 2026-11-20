@@ -6,8 +6,9 @@ import { ROYAL } from "./site-fonts";
 import { EnquiryForm, EnquiryModal } from "@/components/site/enquiry";
 import { FeeCalculatorModal } from "@/components/site/fee-calculators";
 import { ListingChecker } from "@/components/site/listing-checker";
-import { ChannelMarquee, CtaBand, Hero, Portfolio, Reveal, SectionHead, SellerDashboard, SellerPlans, Services, SocialSection, Strategy, ToolsGrid, WhyUs } from "@/components/site/sections";
+import { ChannelMarquee, CtaBand, FactsBand, Hero, Portfolio, Reveal, SectionHead, SellerDashboard, SellerPlans, Services, SocialSection, Strategy, ToolsGrid, WhyUs } from "@/components/site/sections";
 import { hasEmail, SITE, socialLinks } from "@/config/site";
+import { CursorGlow } from "@/components/site/motion";
 
 export const metadata: Metadata = {
   title: `${SITE.company} — grow your sales on Amazon, Flipkart, Myntra, Meesho & Instagram`,
@@ -42,10 +43,12 @@ export default function Home() {
   return (
     <div className={`${ROYAL} min-h-dvh`}>
       <JsonLd />
+      <CursorGlow />
       <SiteHeader />
       <main>
         <Hero />
         <ChannelMarquee />
+        <FactsBand />
         <Services />
         <WhyUs />
         <Strategy />

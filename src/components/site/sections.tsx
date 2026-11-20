@@ -1,10 +1,11 @@
 "use client";
-import { ArrowRight, ArrowUpRight, BadgeCheck, BarChart3, Bell, Calculator, Camera, Check, ClipboardCheck, FileText, Handshake, LayoutDashboard, Megaphone, Radar, ScanSearch, Search, Send, Share2, ShieldCheck, Sparkles, Store, TrendingUp, UserPlus, Warehouse } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BadgeCheck, BarChart3, Bell, Calculator, Camera, Check, ClipboardCheck, FileText, Handshake, LayoutDashboard, Megaphone, Radar, Search, Send, Share2, ShieldCheck, Sparkles, Store, TrendingUp, UserPlus, Warehouse } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import { cn } from "@/components/ui";
-import { hasEmail, realStats, SITE, waHref } from "@/config/site";
+import { realStats, SITE, waHref } from "@/config/site";
 import { ADD_ONS, planPrice, SELLER_PLANS, SHOW_PRICES } from "@/lib/site/pricing";
+import { FlipWords, HScroll, LotusField, Magnetic, Odometer, RiseWords, SpeedMarquee, Spotlight, Unfold, useScrollProgress } from "./motion";
 import { ECOMMERCE_CALCS, FEE_CONFIGS, QUICK_CALCS } from "@/lib/site/fees";
 import { calcHref } from "./fee-calculators";
 
@@ -26,127 +27,110 @@ export function SectionHead({ id, eyebrow, title, accent, body, center }: { id?:
   return (
     <Reveal className={cn("max-w-2xl scroll-mt-20", center && "mx-auto text-center")}>
       <div id={id} className="scroll-mt-24" />
-      <p className={cn("inline-flex items-center gap-2 text-[11.5px] font-semibold tracking-[0.28em] text-accent", center && "justify-center")}><span className="gold-rule w-8" />{eyebrow}<span className="gold-rule w-8" /></p>
-      <h2 className="mt-3 text-[34px] leading-[1.08] text-balance sm:text-[46px]">{title}{accent && <> <span className="text-gradient">{accent}</span></>}</h2>
-      {body && <p className="mt-3 text-[15.5px] text-muted">{body}</p>}
+      <p className={cn("eyebrow inline-flex items-center gap-2", center && "justify-center")}><span className="live-dot" aria-hidden />{eyebrow}</p>
+      <h2 className="mt-4 text-[36px] leading-[1.02] sm:text-[54px]">{title}{accent && <> <span className="em-s">{accent}</span></>}</h2>
+      {body && <p className="mt-4 text-[16px] text-muted">{body}</p>}
     </Reveal>
   );
 }
 
-/* ---------- Shared CTA button ---------- */
+/* ---------- Shared CTA button (leans toward the pointer) ---------- */
 export function GlowButton({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) {
-  return <a href={href} className={cn("btn-siddhi shimmer group inline-flex h-12 items-center gap-2 rounded-full px-6 text-[14.5px] font-semibold text-accent-ink shadow-card hover:brightness-110", className)}>{children}</a>;
+  return <Magnetic><a href={href} className={cn("btn-siddhi shimmer group inline-flex h-12 items-center gap-2 rounded-full px-6 text-[14.5px] font-semibold text-accent-ink shadow-card hover:brightness-110", className)}>{children}</a></Magnetic>;
 }
 
-/* ---------- Hero ---------- */
-const ROTATE = ["Amazon", "Flipkart", "Myntra", "Meesho", "Instagram"];
-function RotatingWord() {
-  const [i, setI] = React.useState(0);
-  React.useEffect(() => { const t = setInterval(() => setI((x) => (x + 1) % ROTATE.length), 2200); return () => clearInterval(t); }, []);
-  return <span className="word-rotate inline-block min-w-[6ch]"><span key={i} className="text-gradient">{ROTATE[i]}</span></span>;
-}
-
-function HeroVisual() {
-  const bars = [30, 42, 38, 55, 50, 64, 61, 78, 74, 92];
-  const sellers = [["Kanchi Weaves", "Amazon · Flipkart", "+18%"], ["Thanjai Spices", "Amazon · Meesho", "+11%"], ["Kovai Home", "Flipkart · Myntra", "+7%"]];
-  return (
-    <div className="relative mx-auto w-full max-w-lg">
-      <div className="float-y gold-frame overflow-hidden rounded-3xl border border-line bg-surface/90 shadow-card backdrop-blur">
-        <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
-          <p className="flex items-center gap-2 text-[13px] font-semibold"><LayoutDashboard className="size-4 text-accent" />Seller dashboard</p>
-          <span className="rounded-md bg-warn-soft px-1.5 py-0.5 text-[10.5px] font-medium text-warn">Illustration</span>
-        </div>
-        <div className="p-5">
-          <p className="text-[11.5px] text-faint">Sales, last 10 weeks · all sellers</p>
-          <div className="mt-3 flex h-32 items-end gap-2" aria-hidden>
-            {bars.map((h, i) => <div key={i} className="bar-grow flex-1 rounded-t-lg bg-gradient-to-t from-[var(--ai)] via-accent to-[var(--g-light)]" style={{ height: `${h}%`, animationDelay: `${i * 70}ms` }} />)}
-          </div>
-          <ul className="mt-4 space-y-2" aria-label="Sample sellers">
-            {sellers.map(([n, m, g]) => (
-              <li key={n} className="flex items-center justify-between rounded-xl bg-raised px-3 py-2 text-[12.5px]">
-                <span><span className="block font-semibold">{n}</span><span className="block text-[11px] text-faint">{m}</span></span>
-                <span className="tnum rounded-full bg-pos-soft px-2 py-0.5 text-[11.5px] font-semibold text-pos">{g}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <div className="float-y-slow absolute -top-5 -right-3 hidden rounded-2xl border border-line bg-surface px-3 py-2 text-[12px] shadow-card sm:block">
-        <p className="flex items-center gap-1.5 font-medium"><Send className="size-3.5 text-ai" />Posted to Instagram</p>
-      </div>
-      <div className="float-y absolute -bottom-6 -left-4 hidden rounded-2xl border border-line bg-surface px-3 py-2 text-[12px] shadow-card sm:block" style={{ animationDelay: "1.5s" }}>
-        <p className="flex items-center gap-1.5 font-medium"><ScanSearch className="size-3.5 text-pos" />Listing check: 100/100</p>
-      </div>
-    </div>
-  );
-}
-
+/* ---------- Hero: a lotus of glowing seeds that blooms, changes petals and scatters from the pointer ---------- */
+const CYCLE = ["Amazon", "Flipkart", "Myntra", "Meesho", "Instagram"];
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="grid-fade pointer-events-none absolute inset-0" aria-hidden />
-      <div className="blob top-[-120px] left-[-80px] size-[380px] bg-accent" aria-hidden />
-      <div className="blob top-[60px] right-[-120px] size-[420px] bg-ai" style={{ animationDelay: "-6s" }} aria-hidden />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pt-10 pb-20 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-16">
-        <div className="min-w-0">
-          <p className="overlay-in inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 text-[12px] text-muted backdrop-blur"><span className="size-1.5 rounded-full bg-ai" />Marketplace growth agency for online sellers</p>
-          <h1 className="mt-6 text-[46px] leading-[1.04] text-balance sm:text-[70px]">
-            Grow your sales<br />on <RotatingWord />
-          </h1>
-          <p className="mt-5 max-w-xl text-[16.5px] text-muted">{SITE.company} runs your marketplace shops for you — listings, ads, photos, videos and social media — and gives you your own dashboard to see every rupee it brings in.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <GlowButton href="#enquiry">Get a free growth plan<ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" /></GlowButton>
-            <a href="#tools" className="inline-flex h-12 items-center gap-2 rounded-full border border-line-strong bg-surface/60 px-6 text-[14.5px] font-semibold text-accent backdrop-blur hover:bg-raised">Try free tools</a>
-          </div>
-          <p className="mt-5 text-[13px] text-muted">Talk to us: <a href={`tel:${SITE.contact.phones[0].replace(/[^+\d]/g, "")}`} className="font-medium text-ink hover:text-accent">{SITE.contact.phones[0]}</a>{SITE.contact.whatsapp && <> · <a href={waHref()} target="_blank" rel="noreferrer" className="font-medium text-ink hover:text-accent">WhatsApp</a></>}{hasEmail() && <> · <a href={`mailto:${SITE.contact.email}`} className="font-medium text-ink hover:text-accent">{SITE.contact.email}</a></>}</p>
+    <section className="relative isolate overflow-hidden">
+      <LotusField className="-z-10" />
+      <div className="mx-auto flex min-h-[88svh] max-w-6xl flex-col justify-center px-4 pt-14 pb-16 sm:px-6">
+        <p className="eyebrow overlay-in w-fit"><span className="live-dot" aria-hidden />Marketplace growth agency · Tamil Nadu</p>
+        <h1 className="mt-7 max-w-3xl text-[50px] sm:text-[88px]">
+          <RiseWords text="Grow your shop" className="block" />
+          <span className="block"><RiseWords text="on" delay={300} className="font-normal text-muted" /><FlipWords words={CYCLE} /></span>
+        </h1>
+        <p className="overlay-in mt-7 max-w-xl text-[17px] text-muted" style={{ animationDelay: "600ms" }}>{SITE.company} runs your marketplace shops for you — listings, ads, photos, videos and social media — and gives you your own dashboard to see every rupee it brings in.</p>
+        <div className="overlay-in mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: "800ms" }}>
+          <GlowButton href="#enquiry">Get a free growth plan<ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" /></GlowButton>
+          <Magnetic><a href="#services" className="inline-flex h-12 items-center gap-2 rounded-full border border-line-strong px-6 text-[14.5px] font-semibold text-ink backdrop-blur hover:border-ink">See what we do</a></Magnetic>
         </div>
-        <HeroVisual />
+        <p className="mt-12 hidden text-[12.5px] text-faint sm:block"><span className="em-s text-[15px]">Tip:</span> move your mouse over the lotus</p>
       </div>
     </section>
   );
 }
 
-/* ---------- Marquee of channels we work with ---------- */
-export function ChannelMarquee() {
-  const items = ["Amazon", "Flipkart", "Myntra", "Meesho", "JioMart", "Ajio", "Nykaa", "Instagram", "Facebook", "WhatsApp", "Meta Ads", "Google", "Blinkit", "Zepto", "Swiggy Instamart", "YouTube"];
+/* ---------- Numbers band: digits roll into place like a meter (facts about the service, not claims) ---------- */
+const FACTS: { to: number; suffix?: string; label: string }[] = [
+  { to: 4, label: "Marketplaces we run" },
+  { to: 3, label: "Social platforms we post to" },
+  { to: 9, label: "Free fee calculators" },
+  { to: 24, suffix: "/7", label: "Alerts on your phone" },
+  { to: 1, label: "Dashboard for everything" },
+];
+export function FactsBand() {
   return (
-    <div className="border-y border-line bg-surface/70 py-4" aria-label="Channels we work with">
-      <div className="overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
-        <div className="marquee gap-3">
-          {[...items, ...items].map((x, i) => <span key={i} aria-hidden={i >= items.length} className="rounded-full border border-line bg-surface px-4 py-1.5 text-[13px] font-medium whitespace-nowrap text-muted">{x}</span>)}
-        </div>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        {FACTS.map((f, i) => (
+          <Reveal key={f.label} delay={i * 70} className={cn(i === 4 && "col-span-2 sm:col-span-1")}>
+            <Spotlight className="h-full rounded-3xl">
+              <div className="h-full rounded-3xl border border-line bg-surface/70 px-5 py-6">
+                <Odometer value={f.to} suffix={f.suffix} className="text-[44px] leading-none font-bold tracking-[-0.04em] sm:text-[52px]" />
+                <span className="mt-3 block text-[13.5px] text-muted">{f.label}</span>
+              </div>
+            </Spotlight>
+          </Reveal>
+        ))}
       </div>
     </div>
   );
 }
 
-/* ---------- Services ---------- */
+/* ---------- Two strips of channels that speed up and lean as you scroll ---------- */
+const STRIPS = [
+  ["Amazon", "Flipkart", "Myntra", "Meesho", "JioMart", "Ajio", "Nykaa", "Blinkit", "Zepto"],
+  ["listings that sell", "ads that pay back", "reels that get seen", "reports in plain words", "Instagram", "Facebook", "WhatsApp", "Google"],
+];
+export function ChannelMarquee() {
+  return <div className="border-y border-line"><SpeedMarquee rows={STRIPS} /></div>;
+}
+
+/* ---------- Services: a pinned section — scrolling down slides the cards sideways ---------- */
 const SERVICE_CARDS = [
-  { icon: Store, title: "Marketplace management", body: "We run your Amazon, Flipkart, Myntra and Meesho shops day to day — orders, stock, prices and offers." },
-  { icon: ClipboardCheck, title: "Listings that sell", body: "Titles, bullet points, descriptions and images fixed to each marketplace's rules, so buyers find you." },
-  { icon: Megaphone, title: "Marketplace ads", body: "Amazon and Flipkart ads planned around profit, with wasted spend cut every week." },
-  { icon: Share2, title: "Facebook & Instagram", body: "Meta ads, posts and reels that send buyers to your shop — posted straight from our studio." },
-  { icon: Camera, title: "Photos & videos", body: "Product photos, banners and short videos made in one look for your brand." },
-  { icon: Search, title: "Search everywhere", body: "Be found on Google, inside marketplace search and in AI answers like ChatGPT and Gemini." },
-  { icon: UserPlus, title: "New seller set-up", body: "Help with registration, documents and your first catalogue upload on each marketplace." },
-  { icon: FileText, title: "Clear reports", body: "Daily alerts and a monthly report in plain words: what sold, what it cost, what's next." },
+  { icon: Store, name: "Marketplace management", who: "Amazon · Flipkart · Myntra · Meesho", body: "We run your shops day to day — orders, stock, prices and offers." },
+  { icon: ClipboardCheck, name: "Listings that sell", who: "Titles · images · A+", body: "Titles, bullet points, descriptions and images fixed to each marketplace's rules, so buyers find you." },
+  { icon: Megaphone, name: "Marketplace ads", who: "Sponsored · PLA", body: "Amazon and Flipkart ads planned around profit, with wasted spend cut every week." },
+  { icon: Share2, name: "Facebook & Instagram", who: "Meta ads · posts · reels", body: "Ads, posts and reels that send buyers to your shop — posted straight from our studio." },
+  { icon: Camera, name: "Photos & videos", who: "Creative studio", body: "Product photos, banners and short videos made in one look for your brand." },
+  { icon: Search, name: "Search everywhere", who: "Google · AI answers", body: "Be found on Google, inside marketplace search and in AI answers like ChatGPT and Gemini." },
+  { icon: UserPlus, name: "New seller set-up", who: "Registration · catalogue", body: "Help with registration, documents and your first catalogue upload on each marketplace." },
+  { icon: FileText, name: "Clear reports", who: "Telegram · PDF", body: "Daily alerts and a monthly report in plain words: what sold, what it cost, what's next." },
 ];
 export function Services() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-      <SectionHead id="services" eyebrow="WHAT WE DO" title="Everything your shop needs" accent="to sell more" body="One team for your listings, ads, creatives and reports — you focus on making and shipping." />
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {SERVICE_CARDS.map((s, i) => (
-          <Reveal key={s.title} delay={i * 60}>
-            <a href="#enquiry" className="gold-frame group flex h-full flex-col rounded-3xl border border-line bg-surface/80 p-6 backdrop-blur transition-all hover:-translate-y-1.5 hover:shadow-card">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-soft to-ai-soft text-accent transition-transform group-hover:scale-110 group-hover:rotate-3"><s.icon className="size-5" /></span>
-              <p className="font-royal mt-4 text-[21px]">{s.title}</p>
-              <p className="mt-1.5 flex-1 text-[13.5px] text-muted">{s.body}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-semibold text-accent">Talk to us<ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" /></span>
-            </a>
-          </Reveal>
+    <section className="py-16">
+      <HScroll
+        head={<div className="mx-auto mb-10 w-full max-w-6xl px-4 sm:px-6"><SectionHead id="services" eyebrow="What we do" title="Everything your shop needs" accent="to sell more." body="Keep scrolling — the services slide past." /></div>}
+      >
+        {SERVICE_CARDS.map((c, i) => (
+          <div key={c.name} data-hcard className="hcard shrink-0">
+            <Spotlight className="h-full rounded-3xl">
+              <a href="#enquiry" className="flex h-[340px] flex-col rounded-3xl border border-line bg-surface p-7">
+                <div className="flex items-start justify-between">
+                  <span className="flex size-14 items-center justify-center rounded-2xl text-accent-ink" style={{ background: `linear-gradient(135deg, hsl(${28 + i * 38} 90% 68%), hsl(${330 + i * 12} 75% 62%))` }}><c.icon className="size-6" /></span>
+                  <span className="em-s text-[44px] leading-none">{String(i + 1).padStart(2, "0")}</span>
+                </div>
+                <p className="mt-auto text-[28px] leading-[1.05] font-bold tracking-[-0.03em]">{c.name}</p>
+                <p className="mt-2 text-[12.5px] font-semibold text-accent">{c.who}</p>
+                <p className="mt-3 text-[14px] text-muted">{c.body}</p>
+              </a>
+            </Spotlight>
+          </div>
         ))}
-      </div>
+      </HScroll>
     </section>
   );
 }
@@ -160,13 +144,14 @@ const STRATEGY = [
   { icon: TrendingUp, title: "Measure & grow", body: "Your dashboard and monthly report show what worked and what's next." },
 ];
 export function Strategy() {
+  const line = useScrollProgress<HTMLDivElement>(0.8);
   return (
     <section className="relative overflow-hidden border-y border-line bg-surface/60">
       <div className="lotus-pattern pointer-events-none absolute inset-0 opacity-60" aria-hidden />
       <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <SectionHead center eyebrow="HOW WE WORK" title="Five steps," accent="one growing shop" body="Like preparing a field before sowing: each step makes the next one pay off." />
-        <div className="relative mt-12">
-          <svg className="absolute top-7 right-[10%] left-[10%] hidden h-2 w-[80%] lg:block" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden><line x1="0" y1="1" x2="100" y2="1" stroke="var(--accent)" strokeWidth="2" vectorEffect="non-scaling-stroke" className="dash-flow" /></svg>
+        <div ref={line} className="relative mt-12">
+          <div className="absolute top-8 right-[10%] left-[10%] hidden h-px origin-left bg-gradient-to-r from-[var(--ai)] to-accent lg:block" style={{ transform: "scaleX(var(--p, 1))" }} aria-hidden />
           <ol className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {STRATEGY.map((s, i) => (
               <Reveal key={s.title} delay={i * 90} className="text-center">
@@ -226,7 +211,7 @@ export function Portfolio() {
   );
 }
 
-/* ---------- Your seller dashboard ---------- */
+/* ---------- Your seller dashboard (unfolds as it scrolls in) ---------- */
 const DASH = [
   { icon: LayoutDashboard, title: "All your numbers in one place", body: "Sales, orders, ad spend and profit from every marketplace, updated for you." },
   { icon: BadgeCheck, title: "Approve before it goes live", body: "See every new photo, video and ad and say yes from your phone." },
@@ -235,28 +220,67 @@ const DASH = [
   { icon: FileText, title: "Monthly PDF report", body: "What sold, what it cost and the plan for next month, in plain words." },
   { icon: ShieldCheck, title: "Your shop stays yours", body: "Accounts stay in your name. We are added as a user — never the owner." },
 ];
+function DashboardMock() {
+  const bars = [30, 42, 38, 55, 50, 64, 61, 78, 74, 92, 86, 98];
+  const sellers: [string, string, string][] = [["Kanchi Weaves", "Amazon · Flipkart", "+18%"], ["Thanjai Spices", "Amazon · Meesho", "+11%"], ["Kovai Home", "Flipkart · Myntra", "+7%"]];
+  return (
+    <div className="overflow-hidden rounded-3xl border border-line-strong bg-surface shadow-card">
+      <div className="flex items-center justify-between border-b border-line px-5 py-3">
+        <p className="flex items-center gap-2 text-[13px] font-semibold"><span className="flex gap-1.5" aria-hidden><span className="size-2.5 rounded-full bg-[#ff5f57]" /><span className="size-2.5 rounded-full bg-[#febc2e]" /><span className="size-2.5 rounded-full bg-[#28c840]" /></span><span className="ml-2">{SITE.company} · Seller dashboard</span></p>
+        <span className="mono rounded-md bg-warn-soft px-1.5 py-0.5 text-[10.5px] font-medium text-warn">Illustration</span>
+      </div>
+      <div className="grid gap-4 p-5 md:grid-cols-[1.5fr_1fr]">
+        <div>
+          <div className="grid grid-cols-3 gap-3">
+            {[["Sales", 482000, "₹"], ["Orders", 1260, ""], ["Ad return", 5, "×"]].map(([l, v, u]) => (
+              <div key={l as string} className="rounded-2xl bg-raised p-3">
+                <p className="mono text-[10.5px] tracking-wider text-faint uppercase">{l}</p>
+                <Odometer value={v as number} prefix={u === "₹" ? "₹" : ""} suffix={u === "×" ? "×" : ""} className="mt-1 block text-[20px] font-bold tracking-tight" />
+              </div>
+            ))}
+          </div>
+          <p className="mono mt-4 text-[11px] text-faint">Sales, last 12 weeks · all sellers</p>
+          <div className="mt-2 flex h-36 items-end gap-1.5" aria-hidden>
+            {bars.map((h, i) => <div key={i} className="bar-grow flex-1 rounded-t-md bg-gradient-to-t from-[var(--ai)] via-accent to-[var(--g-light)]" style={{ height: `${h}%`, animationDelay: `${i * 60}ms` }} />)}
+          </div>
+        </div>
+        <ul className="space-y-2" aria-label="Sample sellers">
+          {sellers.map(([n, m, g]) => (
+            <li key={n} className="flex items-center justify-between rounded-2xl bg-raised px-3 py-2.5 text-[12.5px]">
+              <span><span className="block font-semibold">{n}</span><span className="block text-[11px] text-faint">{m}</span></span>
+              <span className="tnum rounded-full bg-pos-soft px-2 py-0.5 text-[11.5px] font-semibold text-pos">{g}</span>
+            </li>
+          ))}
+          <li className="flex items-center gap-2 rounded-2xl border border-dashed border-line-strong px-3 py-2.5 text-[12px] text-muted"><Send className="size-3.5 text-ai" />Reel posted to Instagram · waiting for likes</li>
+          <li className="flex items-center gap-2 rounded-2xl border border-dashed border-line-strong px-3 py-2.5 text-[12px] text-muted"><Bell className="size-3.5 text-accent" />Low stock: 6 left of Silk Saree – Maroon</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
 export function SellerDashboard() {
   return (
-    <section className="border-y border-line bg-surface/60">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_1.05fr]">
-        <div>
-          <SectionHead id="platform" eyebrow="YOUR SELLER DASHBOARD" title="See exactly what" accent="we do for you" body={`Every ${SITE.company} seller gets their own login. No waiting for updates — open the dashboard any time.`} />
-          <Reveal className="mt-7 flex flex-wrap gap-3">
-            <Link href="/login" className="inline-flex h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-5 text-[14px] font-semibold text-accent hover:bg-raised">Open the dashboard preview<ArrowUpRight className="size-4" /></Link>
-          </Reveal>
-          <p className="mt-3 text-[12px] text-faint">The preview uses sample data.</p>
+    <section className="relative overflow-hidden border-y border-line">
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <SectionHead id="platform" eyebrow="Your seller dashboard" title="See exactly what" accent="we do for you." body={`Every ${SITE.company} seller gets their own login. No waiting for updates — open the dashboard any time.`} />
+          <Link href="/login" className="inline-flex h-11 items-center gap-2 rounded-full border border-line-strong px-5 text-[14px] font-semibold transition-transform hover:-translate-y-0.5 hover:border-ink">Open the preview<ArrowUpRight className="size-4" /></Link>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <Unfold className="mt-12"><DashboardMock /></Unfold>
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {DASH.map((d, i) => (
             <Reveal key={d.title} delay={i * 50}>
-              <div className="gold-frame h-full rounded-2xl border border-line bg-surface p-4 transition-transform hover:-translate-y-1">
-                <d.icon className="size-5 text-ai" aria-hidden />
-                <p className="mt-2.5 text-[14.5px] font-semibold">{d.title}</p>
-                <p className="mt-1 text-[13px] text-muted">{d.body}</p>
-              </div>
+              <Spotlight className="h-full rounded-2xl">
+                <div className="h-full rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-line-strong">
+                  <d.icon className="size-5 text-ai" aria-hidden />
+                  <p className="mt-3 text-[15px] font-semibold">{d.title}</p>
+                  <p className="mt-1 text-[13.5px] text-muted">{d.body}</p>
+                </div>
+              </Spotlight>
             </Reveal>
           ))}
         </div>
+        <p className="mono mt-4 text-[11.5px] text-faint">The preview uses sample data.</p>
       </div>
     </section>
   );
@@ -270,17 +294,19 @@ export function SellerPlans() {
       <div className="mt-10 grid gap-5 lg:grid-cols-3">
         {SELLER_PLANS.map((p, i) => (
           <Reveal key={p.id} delay={i * 80}>
-            <div className={cn("gold-frame relative flex h-full flex-col rounded-3xl border p-6", p.highlight ? "border-accent bg-gradient-to-b from-accent-soft to-surface shadow-card" : "border-line bg-surface")}>
+            <Spotlight className="h-full rounded-3xl">
+            <div className={cn("relative flex h-full flex-col rounded-3xl border p-6", p.highlight ? "border-accent bg-gradient-to-b from-accent-soft to-surface shadow-card" : "border-line bg-surface")}>
               {p.highlight && <span className="absolute -top-3 left-6 rounded-full bg-ai px-3 py-1 text-[11px] font-semibold text-white">Most chosen</span>}
-              <p className="text-[12px] font-semibold tracking-[0.2em] text-accent uppercase">{p.name}</p>
+              <p className="eyebrow !text-accent">{p.name}</p>
               <p className="mt-1 text-[13px] text-muted">{p.forWho}</p>
-              <p className="font-royal tnum mt-4 text-[44px] leading-none">{planPrice(p)}</p>
+              <p className="font-royal tnum mt-4 text-[46px] leading-none tracking-[-0.04em]">{planPrice(p)}</p>
               {SHOW_PRICES && <p className="mt-1 text-[12.5px] text-faint">a month + GST</p>}
               <ul className="mt-5 flex-1 space-y-2.5 text-[13.5px]">
                 {p.features.map((f) => <li key={f} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-pos" />{f}</li>)}
               </ul>
               <a href="#enquiry" className={cn("mt-6 inline-flex h-11 items-center justify-center rounded-full text-[14px] font-semibold", p.highlight ? "btn-siddhi text-accent-ink" : "border border-line-strong text-accent hover:bg-raised")}>Choose {p.name}</a>
             </div>
+            </Spotlight>
           </Reveal>
         ))}
       </div>
@@ -307,10 +333,10 @@ export function WhyUs() {
       <div className="grid gap-4 md:grid-cols-3">
         {WHY.map((w, i) => (
           <Reveal key={w.title} delay={i * 70}>
-            <div className="flex h-full gap-4 rounded-3xl border border-line bg-surface/70 p-5">
+            <Spotlight className="h-full rounded-3xl"><div className="flex h-full gap-4 rounded-3xl border border-line bg-surface/70 p-5">
               <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-ai-soft text-ai"><w.icon className="size-5" /></span>
               <span><span className="block text-[15px] font-semibold">{w.title}</span><span className="mt-1 block text-[13.5px] text-muted">{w.body}</span></span>
-            </div>
+            </div></Spotlight>
           </Reveal>
         ))}
       </div>

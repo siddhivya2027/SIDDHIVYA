@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
 import { BRAND_DEFAULTS } from "@/config/brand";
 import { SITE } from "@/config/site";
-import { bodyFont, royalFont } from "./site-fonts";
+import { bodyFont, monoFont, royalFont, serifFont } from "./site-fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,11 +16,11 @@ export const metadata: Metadata = {
 };
 
 // Applies the saved theme before first paint so the page never flashes the wrong colours.
-const themeScript = `try{var s=JSON.parse(localStorage.getItem("siddhivya-demo-v1")||"{}").state||{};var e=document.documentElement;if((s.theme||"dark")==="dark")e.classList.add("dark");if(s.brand&&s.brand.accent)e.dataset.accent=s.brand.accent}catch(e){document.documentElement.classList.add("dark")}`;
+const themeScript = `try{var s=JSON.parse(localStorage.getItem("siddhivya-demo-v1")||"{}").state||{};var e=document.documentElement;if(s.brand&&s.brand.accent)e.dataset.accent=s.brand.accent}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${bodyFont.variable} ${royalFont.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${bodyFont.variable} ${royalFont.variable} ${monoFont.variable} ${serifFont.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

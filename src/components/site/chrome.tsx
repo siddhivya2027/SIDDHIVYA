@@ -1,5 +1,5 @@
 "use client";
-import { ArrowUpRight, ChevronDown, ChevronRight, Mail, MapPin, Menu, MessageCircle, Phone, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, ChevronRight, Mail, MapPin, Menu, MessageCircle, Moon, Phone, Sun, X } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import { BrandMark } from "@/components/shell/sidebar";
@@ -8,6 +8,7 @@ import { BRAND_DEFAULTS } from "@/config/brand";
 import { hasEmail, SITE, socialLinks, telHref, waHref } from "@/config/site";
 import { FEE_CONFIGS } from "@/lib/site/fees";
 import { SERVICES } from "@/lib/site/leads";
+import { useStore } from "@/lib/store";
 import { CALC_GROUPS, calcHref } from "./fee-calculators";
 import { useScrolled } from "./use-browser";
 
@@ -67,6 +68,7 @@ export function SiteHeader() {
           {NAV.map(([href, label]) => <a key={href} href={href} className="text-[13.5px] font-medium text-muted hover:text-ink">{label}</a>)}
         </nav>
         <div className="ml-auto flex items-center gap-1.5">
+          <ThemeToggle />
           <Link href="/login" className="hidden h-9 items-center rounded-md px-3 text-[13px] font-medium text-muted hover:bg-raised hover:text-ink md:inline-flex">Seller login</Link>
           <a href="#enquiry" className="btn-siddhi shimmer pulse-ring hidden h-9 items-center rounded-full px-4 text-[13px] font-semibold text-accent-ink hover:brightness-110 sm:inline-flex">Free growth plan</a>
           <Button variant="ghost" size="icon" className="lg:hidden" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</Button>
@@ -145,5 +147,16 @@ export function SiteFooter() {
         <p className="mt-1">Amazon, Flipkart, Myntra, Meesho, JioMart, eBay, Etsy, Blinkit, Zepto, Swiggy Instamart and Meta are trademarks of their owners. We are not affiliated with or endorsed by them.</p>
       </div>
     </footer>
+  );
+}
+
+/** Sun/moon switch. Every visit opens in light mode; this changes it for the current visit. */
+function ThemeToggle() {
+  const theme = useStore((s) => s.theme);
+  const dark = theme === "dark";
+  return (
+    <button type="button" onClick={() => useStore.setState({ theme: dark ? "light" : "dark" })} aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} className="flex size-9 items-center justify-center rounded-full border border-line text-muted transition-colors hover:border-line-strong hover:text-ink">
+      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+    </button>
   );
 }
