@@ -1,6 +1,8 @@
 import { leadSchema, type LeadResponse } from "@/lib/site/leads";
 import { newReference, sendLeadAlert } from "@/server/leads";
 import { allow } from "@/server/rate-limit";
+import { db, hasDb } from "@/server/db";
+import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +28,7 @@ export async function POST(request: Request) {
     return reply({ ok: false, error: "Some fields need attention.", fields }, 422);
   }
   const reference = newReference(parsed.data.kind);
+  if (hasDb()) await db().doc.create({ data: { kind: "lead", id: reference, data: { ...parsed.data, website: undefined, reference, at: Date.now() } as unknown as Prisma.InputJsonValue, updatedBy: "website" } }).catch(() => null);
   const alert = await sendLeadAlert(parsed.data, reference);
   return reply({ ok: true, reference, alert });
 }

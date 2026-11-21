@@ -27,7 +27,7 @@ const DEFAULT_PERMS: Record<Role, Record<Permission, boolean>> = {
 };
 
 export type RangePreset = "7d" | "14d" | "30d" | "90d" | "mtd" | "custom";
-export interface Session { name: string; email: string; role: Role }
+export interface Session { name: string; email: string; role: Role; /** Live mode: database user id, and the seller this login belongs to (seller logins only). */ uid?: string; clientId?: string | null; live?: boolean }
 export interface AppUser { id: string; name: string; email: string; role: Role; status: "active" | "invited" | "deactivated" }
 export interface AuditEntry { id: string; ts: number; actor: string; action: string; target: string }
 export interface ReportRecord { id: string; ts: number; type: string; title: string; client: string; range: string; format: "CSV" | "PDF"; rows: number; by: string }

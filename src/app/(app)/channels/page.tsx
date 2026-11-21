@@ -8,7 +8,10 @@ import { Badge, Button, Card, CardHeader, Field, Input, Select, Switch } from "@
 import { SITE } from "@/config/site";
 import { CHANNELS, KIND_LABEL } from "@/lib/launch/channels";
 import { writeListings } from "@/lib/launch/engine";
-import { sampleOrders, unitsSold } from "@/lib/launch/orders";
+import { sampleOrders, unitsSold, type Order } from "@/lib/launch/orders";
+import { LIVE } from "@/lib/live/mode";
+import { useLiveOrders } from "@/lib/live/orders";
+import { SellerKeys } from "@/components/live/seller-keys";
 import { publishEverywhere } from "@/lib/launch/publish-client";
 import { emptySetup, isLive, patchLaunch, setSellerSetup, useSellers } from "@/lib/launch/state";
 import type { AccountState, ChannelKind, LaunchProduct } from "@/lib/launch/types";
@@ -16,10 +19,10 @@ import { useStore } from "@/lib/store";
 
 const ACC: { value: AccountState; label: string }[] = [{ value: "not_started", label: "Not set up" }, { value: "applied", label: "Applied" }, { value: "approved", label: "Approved" }];
 
-function StockRow({ p }: { p: LaunchProduct }) {
-  const status = useChannelStatus();
+function StockRow({ p, orders }: { p: LaunchProduct; orders: Order[] }) {
+  const status = useChannelStatus(p.clientId);
   const simulate = useStore((s) => s.simulatePublish);
-  const sold = unitsSold(sampleOrders(p), p.id);
+  const sold = unitsSold(LIVE ? orders : sampleOrders(p), p.id);
   const [total, setTotal] = React.useState(String(p.stock));
   const on = p.listings.filter((l) => l.enabled && l.stock > 0);
   const syncable = p.listings.filter((l) => l.enabled && (l.channel === "amazon" || l.channel === "flipkart") && isLive(p.jobs[l.channel]?.state)).map((l) => l.channel);
@@ -49,10 +52,12 @@ function StockRow({ p }: { p: LaunchProduct }) {
 }
 
 export default function ChannelsPage() {
-  const status = useChannelStatus();
   const sellers = useSellers();
   const clientId = useStore((s) => s.clientId);
   const [seller, setSeller] = React.useState(clientId);
+  const [tick, setTick] = React.useState(0);
+  const status = useChannelStatus(seller, tick);
+  const { orders } = useLiveOrders(seller);
   const setup = useStore((s) => s.sellerSetup[seller]) ?? emptySetup();
   const launches = useStore((s) => s.launches).filter((l) => l.clientId === seller);
   const up = <K extends keyof typeof setup>(k: K, v: (typeof setup)[K]) => setSellerSetup(seller, (s) => ({ ...s, [k]: v }));
@@ -64,7 +69,7 @@ export default function ChannelsPage() {
       } />
       <div className="grid gap-4 xl:grid-cols-2">
         <Card>
-          <CardHeader title="Connections" subtitle="Direct channels switch on when their keys are added on the server (Vercel → Settings → Environment Variables). Upload-file channels need no keys." />
+          <CardHeader title="Connections" subtitle={LIVE ? "Each seller connects their own accounts — add their keys below. Upload-file channels need no keys." : "Direct channels switch on when their keys are added on the server (Vercel → Settings → Environment Variables). Upload-file channels need no keys."} />
           <div className="space-y-4 px-5 pb-5">
             {kinds.map((k) => (
               <div key={k}>
@@ -113,13 +118,14 @@ export default function ChannelsPage() {
           </div>
         </Card>
       </div>
+      {LIVE && seller && <SellerKeys clientId={seller} sellerName={sellers.find((c) => c.id === seller)?.name ?? "this seller"} onSaved={() => setTick((t) => t + 1)} />}
       <Card className="mt-4">
         <CardHeader title="One stock count for every app" subtitle="Change the total once. Amazon and Flipkart are updated straight away (when connected); quick-delivery apps get their share in the next upload sheet." />
         {launches.length === 0 ? <p className="px-5 pb-5 text-[13px] text-muted">No products for this seller yet.</p> : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-[13px]">
               <thead className="border-y border-line bg-raised text-[12px] text-muted"><tr>{["Product", "Total stock", "Sold", "On each app", ""].map((h) => <th key={h} className="px-4 py-2 font-medium">{h}</th>)}</tr></thead>
-              <tbody className="divide-y divide-line">{launches.map((p) => <StockRow key={p.id} p={p} />)}</tbody>
+              <tbody className="divide-y divide-line">{launches.map((p) => <StockRow key={p.id} p={p} orders={orders} />)}</tbody>
             </table>
           </div>
         )}

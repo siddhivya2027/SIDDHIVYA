@@ -9,6 +9,8 @@ import { BrandMark } from "@/components/shell/sidebar";
 import { Button, Field, Input, Select } from "@/components/ui";
 import { BRAND_DEFAULTS, DEMO_NOTICE } from "@/config/brand";
 import { ROLE_LABEL, useStore, type Role } from "@/lib/store";
+import { LiveLogin } from "@/components/live/live-login";
+import { LIVE } from "@/lib/live/mode";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Enter the name to show in the workspace").max(60),
@@ -23,6 +25,10 @@ const POINTS = [
 ];
 
 export default function LoginPage() {
+  return LIVE ? <LiveLogin /> : <DemoLogin />;
+}
+
+function DemoLogin() {
   const router = useRouter();
   const { session, hydrated, signIn, brand } = useStore();
   const { register, handleSubmit, formState: { errors } } = useForm<Form>({ resolver: zodResolver(schema), defaultValues: { name: "Ananya Rao", role: "admin" } });

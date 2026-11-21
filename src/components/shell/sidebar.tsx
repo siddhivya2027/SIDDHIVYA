@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { DEMO_NOTICE } from "@/config/brand";
 import { useStore } from "@/lib/store";
 import { Tip, cn } from "../ui";
-import { NAV } from "./nav";
+import { LIVE } from "@/lib/live/mode";
+import { liveNav, NAV } from "./nav";
 
 /** SIDDHIVYA lotus mark: three petals rising from a base line — growth from a steady root. */
 export function BrandMark({ size = 28 }: { size?: number }) {
@@ -31,8 +32,10 @@ export function Sidebar({ mobile, onNavigate }: { mobile?: boolean; onNavigate?:
   const collapsedPref = useStore((s) => s.sidebarCollapsed);
   const set = useStore((s) => s.set);
   const collapsed = !mobile && collapsedPref;
+  const sellerLogin = useStore((s) => !!s.session?.live && s.session.role === "viewer");
+  const nav = LIVE ? liveNav(sellerLogin) : NAV;
   // The most specific menu entry wins (so /studio/reel lights "Reel maker", not "Creative Studio").
-  const bestMatch = NAV.flatMap((g) => g.items).filter((i) => path === i.href || path.startsWith(i.href + "/")).sort((x, y) => y.href.length - x.href.length)[0]?.href;
+  const bestMatch = nav.flatMap((g) => g.items).filter((i) => path === i.href || path.startsWith(i.href + "/")).sort((x, y) => y.href.length - x.href.length)[0]?.href;
   return (
     <aside className={cn("flex h-full shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200", mobile ? "w-full border-0" : collapsed ? "w-[60px]" : "w-[236px]")}>
       <div className={cn("flex h-14 items-center gap-2.5 border-b border-line", collapsed ? "justify-center px-0" : "px-4")}>
@@ -45,7 +48,7 @@ export function Sidebar({ mobile, onNavigate }: { mobile?: boolean; onNavigate?:
         )}
       </div>
       <nav className="scroll-thin flex-1 overflow-y-auto px-2 py-3" aria-label="Main">
-        {NAV.map((g) => (
+        {nav.map((g) => (
           <div key={g.group} className="mb-4">
             {!collapsed ? <p className="mb-1 px-2 text-[11.5px] font-medium text-faint">{g.group}</p> : <div className="mx-2 mb-2 h-px bg-line" />}
             <ul className="space-y-0.5">
@@ -65,7 +68,7 @@ export function Sidebar({ mobile, onNavigate }: { mobile?: boolean; onNavigate?:
           </div>
         ))}
       </nav>
-      {!collapsed && (
+      {!collapsed && !LIVE && (
         <div className="mx-3 mb-3 rounded-lg border border-line bg-raised/60 px-3 py-2.5">
           <p className="text-[11px] font-semibold tracking-wide text-accent">DEMO ENVIRONMENT</p>
           <p className="mt-0.5 text-[11.5px] leading-snug text-muted">{DEMO_NOTICE}</p>

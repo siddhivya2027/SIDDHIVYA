@@ -2,6 +2,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { AutoAlerts } from "@/components/launch/auto-alerts";
+import { LiveGate } from "@/components/live/live-gate";
+import { LIVE } from "@/lib/live/mode";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
 import { Sheet, Skeleton } from "@/components/ui";
@@ -18,16 +20,26 @@ function ShellSkeleton() {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const hydrated = useStore((s) => s.hydrated);
+  if (LIVE) return hydrated ? <LiveGate fallback={<ShellSkeleton />}><Shell>{children}</Shell></LiveGate> : <ShellSkeleton />;
+  return <DemoLayout>{children}</DemoLayout>;
+}
+
+function DemoLayout({ children }: { children: React.ReactNode }) {
+  const hydrated = useStore((s) => s.hydrated);
   const session = useStore((s) => s.session);
   const router = useRouter();
-  const path = usePathname();
-  const [navOpen, setNavOpen] = React.useState(false);
   React.useEffect(() => { if (hydrated && !session) router.replace("/login"); }, [hydrated, session, router]);
   if (!hydrated || !session) return <ShellSkeleton />;
+  return <Shell>{children}</Shell>;
+}
+
+function Shell({ children }: { children: React.ReactNode }) {
+  const path = usePathname();
+  const [navOpen, setNavOpen] = React.useState(false);
   const fullBleed = path.startsWith("/studio/editor");
   return (
     <div className="flex h-dvh overflow-hidden">
-      <AutoAlerts />
+      {!LIVE && <AutoAlerts />}
       <div className="hidden lg:block"><Sidebar /></div>
       <Sheet open={navOpen} onOpenChange={setNavOpen} title="Navigation" side="left"><Sidebar mobile onNavigate={() => setNavOpen(false)} /></Sheet>
       <div className="flex min-w-0 flex-1 flex-col">

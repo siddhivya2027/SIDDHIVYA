@@ -11,6 +11,9 @@ import { ChecksList, OneClickButton, PublishCard } from "@/components/launch/pub
 import { SearchCard } from "@/components/launch/search-card";
 import { Badge, Button, Card, EmptyState } from "@/components/ui";
 import { inr } from "@/lib/format";
+import { isSellerLogin } from "@/lib/live/auth-client";
+import { SellerProductView } from "@/components/live/seller-product";
+import { useStore } from "@/lib/store";
 import { deleteLaunch, useLaunch, useSellers } from "@/lib/launch/state";
 
 const STEPS = [["#product", "Product"], ["#photos", "Photos"], ["#listings", "Where to sell"], ["#creative", "Post image"], ["#ads", "Ads"], ["#search", "Search"], ["#approval", "Approval"], ["#publish", "ONE CLICK"]] as const;
@@ -20,8 +23,15 @@ export default function LaunchProductPage() {
   const p = useLaunch(id);
   const router = useRouter();
   const sellers = useSellers();
-  if (!p) return <EmptyState title="Product not found" body="It may have been deleted." action={<Link href="/launch" className="text-[13px] font-medium text-accent">Back to One-Click Launch</Link>} />;
+  const sellerLogin = isSellerLogin(useStore((s) => s.session));
+  if (!p) return <EmptyState title="Product not found" body="It may have been deleted." action={<Link href="/launch" className="text-[13px] font-medium text-accent">Back to products</Link>} />;
   const seller = sellers.find((c) => c.id === p.clientId);
+  if (sellerLogin) return (
+    <>
+      <Link href="/launch" className="mb-4 inline-flex items-center gap-1 text-[13px] text-muted hover:text-ink"><ArrowLeft className="size-4" />My products</Link>
+      <SellerProductView p={p} />
+    </>
+  );
   const remove = () => { if (window.confirm(`Delete ${p.name || "this product"}? This cannot be undone.`)) { deleteLaunch(p.id); router.push("/launch"); } };
   return (
     <>

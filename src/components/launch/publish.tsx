@@ -12,9 +12,9 @@ import { setJob, useSellers, useSetup } from "@/lib/launch/state";
 import type { ChannelId, LaunchProduct } from "@/lib/launch/types";
 import { useStore } from "@/lib/store";
 
-export function useChannelStatus() {
+export function useChannelStatus(clientId?: string, tick = 0) {
   const [st, setSt] = React.useState<ChannelStatus | null>(null);
-  React.useEffect(() => { void fetchChannelStatus().then(setSt); }, []);
+  React.useEffect(() => { void fetchChannelStatus(clientId).then(setSt); }, [clientId, tick]);
   return st;
 }
 
@@ -37,7 +37,7 @@ export function OneClickButton({ p, className }: { p: LaunchProduct; className?:
   const setup = useSetup(p.clientId);
   const sellers = useSellers();
   const simulate = useStore((s) => s.simulatePublish);
-  const status = useChannelStatus();
+  const status = useChannelStatus(p.clientId);
   const [running, setRunning] = React.useState(false);
   const blocks = blocking(readiness(p, setup));
   const approved = p.approval.state === "approved";
@@ -61,7 +61,7 @@ export function OneClickButton({ p, className }: { p: LaunchProduct; className?:
 }
 
 export function PublishCard({ p }: { p: LaunchProduct }) {
-  const status = useChannelStatus();
+  const status = useChannelStatus(p.clientId);
   const simulate = useStore((s) => s.simulatePublish);
   const sellers = useSellers();
   const city = sellers.find((c) => c.id === p.clientId)?.city ?? "";

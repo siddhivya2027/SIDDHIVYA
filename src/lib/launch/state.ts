@@ -2,6 +2,7 @@
 /** Store helpers for One-Click Launch. All writes go through here so every change is stamped and logged. */
 import { CLIENTS } from "@/lib/demo/catalog";
 import type { Client } from "@/lib/demo/types";
+import { LIVE } from "@/lib/live/mode";
 import { useStore } from "@/lib/store";
 import { CHANNELS } from "./channels";
 import type { AlertLog, ChannelId, LaunchProduct, PublishJob, SellerSetup } from "./types";
@@ -35,5 +36,5 @@ export const liveCount = (p: LaunchProduct) => CHANNELS.filter((c) => isLive(p.j
 /** Sellers = the agency's clients (sample ones plus any added). */
 export function useSellers(): Client[] {
   const custom = useStore((s) => s.customClients);
-  return [...CLIENTS, ...custom];
+  return LIVE ? custom : [...CLIENTS, ...custom];
 }

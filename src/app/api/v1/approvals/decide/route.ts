@@ -2,6 +2,7 @@ import { z } from "zod";
 import { readToken, receiptFor } from "@/server/launch/approvals";
 import { sendTelegram, sendWebhook } from "@/server/launch/notify";
 import { allow } from "@/server/rate-limit";
+import { recordDecision } from "@/server/live/launch-doc";
 
 export const dynamic = "force-dynamic";
 const schema = z.object({ token: z.string().min(10).max(40_000), decision: z.enum(["approved", "changes"]), note: z.string().max(600).default("") });
@@ -17,6 +18,8 @@ export async function POST(request: Request) {
   const text = parsed.data.decision === "approved"
     ? `✅ ${t.sum.seller} APPROVED ${t.sum.product} (${t.sum.size}) at Rs ${t.sum.price} for ${t.sum.channels.length} channels. Code ${receipt}`
     : `✏️ ${t.sum.seller} asked for changes on ${t.sum.product}: "${parsed.data.note || "no note"}". Code ${receipt}`;
+  // Live: only a signed link may change the product record (an unsigned link could be forged).
+  const saved = t.signed ? await recordDecision(t.sum.lid, parsed.data.decision, parsed.data.note, receipt, `${t.sum.seller} (link)`).catch(() => null) : null;
   const [tg, wh] = await Promise.all([sendTelegram(text), sendWebhook(text, { kind: "approval", lid: t.sum.lid, decision: parsed.data.decision, receipt })]);
-  return Response.json({ ok: true, receipt, signed: t.signed, notified: tg.state === "sent" || wh === "sent" });
+  return Response.json({ ok: true, receipt, signed: t.signed, notified: tg.state === "sent" || wh === "sent", saved: !!saved });
 }

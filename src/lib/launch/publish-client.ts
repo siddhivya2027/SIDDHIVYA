@@ -13,8 +13,8 @@ import { addAlertLog, patchLaunch, setJob } from "./state";
 import type { ChannelId, LaunchProduct, PublishJob } from "./types";
 
 export interface ChannelStatus { demoMode: boolean; signedApprovals: boolean; channels: Record<string, { configured: boolean; missing: string[] }> }
-export async function fetchChannelStatus(): Promise<ChannelStatus | null> {
-  try { const r = await fetch("/api/v1/channels", { cache: "no-store" }); return r.ok ? await r.json() : null; } catch { return null; }
+export async function fetchChannelStatus(clientId?: string): Promise<ChannelStatus | null> {
+  try { const r = await fetch(`/api/v1/channels${clientId ? `?clientId=${encodeURIComponent(clientId)}` : ""}`, { cache: "no-store" }); return r.ok ? await r.json() : null; } catch { return null; }
 }
 
 const job = (channel: ChannelId, state: PublishJob["state"], message: string, extra: Partial<PublishJob> = {}): PublishJob => ({ channel, state, message, ts: Date.now(), ...extra });
@@ -63,6 +63,7 @@ export async function publishEverywhere(p: LaunchProduct, opts: { simulate: bool
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({
           channel: l.channel,
+          clientId: p.clientId,
           listing: { title: l.title, bullets: l.bullets, description: l.description, price: l.price, stock: l.stock },
           product: { name: p.name, brand: p.brand, sku: p.sku, size: p.size, mrp: p.mrp, weightGrams: p.weightGrams, amazonProductType: p.amazonProductType, flipkartFsn: p.flipkartFsn },
           image: info.kind === "social" ? image : undefined,

@@ -4,18 +4,19 @@
  * REAL settlement files the team downloads from each seller dashboard (CSV import).
  */
 import { rnd } from "@/lib/demo/generate";
+import { LIVE } from "@/lib/live/mode";
 import { CH } from "./channels";
 import { profitOn } from "./engine";
 import type { ChannelId, LaunchProduct, Settlement } from "./types";
 
-export interface Order { id: string; launchId: string; clientId: string; channel: ChannelId; ts: number; qty: number; sale: number; fees: number; payout: number; payoutOn: number; sample: true }
+export interface Order { id: string; launchId: string; clientId: string; channel: ChannelId; ts: number; qty: number; sale: number; fees: number; payout: number; payoutOn: number; sample: boolean; status?: string; orderId?: string }
 
 const RATE: Partial<Record<ChannelId, number>> = { amazon: 6, flipkart: 4, meesho: 5, blinkit: 7, zepto: 5, instamart: 4 }; // sample orders per day
 const SETTLE_DAYS: Partial<Record<ChannelId, number>> = { amazon: 7, flipkart: 10, meesho: 7, blinkit: 15, zepto: 15, instamart: 15 };
 const DAY = 86400000;
 
 export function sampleOrders(p: LaunchProduct, now = Date.now()): Order[] {
-  if (!p.liveSince) return [];
+  if (LIVE || !p.liveSince) return []; // live mode shows only real orders
   const out: Order[] = [];
   for (const l of p.listings) {
     const j = p.jobs[l.channel];
@@ -38,6 +39,7 @@ export function sampleOrders(p: LaunchProduct, now = Date.now()): Order[] {
   return out.sort((a, b) => b.ts - a.ts);
 }
 
+export const SETTLE_AFTER = SETTLE_DAYS;
 export const unitsSold = (orders: Order[], launchId: string) => orders.filter((o) => o.launchId === launchId).reduce((a, o) => a + o.qty, 0);
 
 /* ---------- Settlement file import (real data) ---------- */

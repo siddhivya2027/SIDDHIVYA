@@ -15,6 +15,9 @@ import { MAX_CUSTOM_DAYS, RANGE_OPTIONS, useScope } from "@/lib/use-scope";
 import { toast } from "../shared";
 import { Badge, Button, Field, Input, Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger, Modal, Segmented, Tip, cn } from "../ui";
 import { TOUR } from "./nav";
+import { ChangePassword } from "@/components/live/live-gate";
+import { liveSignOut } from "@/lib/live/auth-client";
+import { LIVE } from "@/lib/live/mode";
 
 const MP_OPTIONS: { value: MarketplaceFilter; label: string }[] = [{ value: "all", label: "All" }, { value: "amazon", label: "Amazon" }, { value: "flipkart", label: "Flipkart" }];
 
@@ -121,6 +124,30 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
   const router = useRouter();
   const { session, theme, set, signOut, resetDemo } = useStore();
   const [confirmReset, setConfirmReset] = React.useState(false);
+  const [pw, setPw] = React.useState(false);
+  if (LIVE) return (
+    <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
+      <div className="flex h-14 items-center gap-2 px-3 sm:px-5">
+        <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenu} aria-label="Open navigation"><MenuIcon /></Button>
+        <Badge tone="pos" className="px-2 py-1 font-semibold tracking-wide">LIVE</Badge>
+        <div className="ml-auto flex items-center gap-1">
+          <Button variant="ghost" size="icon" aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} onClick={() => set({ theme: theme === "dark" ? "light" : "dark" })}>{theme === "dark" ? <Sun /> : <Moon />}</Button>
+          <Menu>
+            <MenuTrigger asChild>
+              <button type="button" aria-label="Account menu" className="ml-1 flex size-8 items-center justify-center rounded-full bg-accent-soft text-[12px] font-semibold text-accent">{initials(session?.name ?? "S V")}</button>
+            </MenuTrigger>
+            <MenuContent className="w-60">
+              <div className="px-2 py-1.5"><p className="text-[13px] font-medium">{session?.name}</p><p className="text-[12px] text-faint">{session?.email}</p></div>
+              <MenuSeparator />
+              <MenuItem onSelect={() => setPw(true)}><Settings />Change password</MenuItem>
+              <MenuItem onSelect={() => void liveSignOut()}><LogOut />Sign out</MenuItem>
+            </MenuContent>
+          </Menu>
+        </div>
+      </div>
+      {pw && <ChangePassword onDone={() => setPw(false)} />}
+    </header>
+  );
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
       <div className="flex h-14 items-center gap-2 px-3 sm:px-5">

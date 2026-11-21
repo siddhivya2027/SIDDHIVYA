@@ -1,4 +1,4 @@
-import { BarChart3, BellRing, Building2, Clapperboard, FileText, Inbox, LayoutDashboard, LineChart, Megaphone, Package, Palette, Rocket, Search, Settings, ShoppingBag, ShoppingCart, Sparkles, Store, Wallet, type LucideIcon } from "lucide-react";
+import { BarChart3, BellRing, Building2, UsersRound, Handshake, Clapperboard, FileText, Inbox, LayoutDashboard, LineChart, Megaphone, Package, Palette, Rocket, Search, Settings, ShoppingBag, ShoppingCart, Sparkles, Store, Wallet, type LucideIcon } from "lucide-react";
 
 export interface NavItem { href: string; label: string; icon: LucideIcon; badge?: string }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -46,3 +46,15 @@ export const TOUR = [
   { href: "/reports", title: "Reports", note: "Generate and export a business report" },
   { href: "/clients", title: "Client management", note: "Run several clients from one workspace" },
 ];
+
+/** Live mode menu: only pages that run on real data, plus Sellers and Team. Seller logins see their products and orders only. */
+const DEMO_ONLY_PREFIX = ["/overview", "/ai", "/marketplaces", "/meta-ads", "/advertising", "/sales", "/products", "/reports", "/clients", "/settings"];
+export function liveNav(sellerLogin: boolean): { group: string; items: NavItem[] }[] {
+  if (sellerLogin) return [{ group: "My shop", items: [{ href: "/launch", label: "My products", icon: Rocket }, { href: "/orders", label: "Orders & money", icon: Wallet }] }];
+  const keep = NAV.map((g) => ({ ...g, items: g.items.filter((i) => !DEMO_ONLY_PREFIX.some((p) => i.href === p || i.href.startsWith(p + "/"))) })).filter((g) => g.items.length);
+  const agency = keep.find((g) => g.group === "Agency");
+  const extra = [{ href: "/sellers", label: "Sellers", icon: Handshake }, { href: "/team", label: "Team & logins", icon: UsersRound }];
+  if (agency) agency.items = [...extra, ...agency.items];
+  else keep.push({ group: "Agency", items: extra });
+  return keep;
+}
