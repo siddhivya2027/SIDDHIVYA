@@ -1,6 +1,7 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
+import { AutoAlerts } from "@/components/launch/auto-alerts";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
 import { Sheet, Skeleton } from "@/components/ui";
@@ -26,6 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const fullBleed = path.startsWith("/studio/editor");
   return (
     <div className="flex h-dvh overflow-hidden">
+      <AutoAlerts />
       <div className="hidden lg:block"><Sidebar /></div>
       <Sheet open={navOpen} onOpenChange={setNavOpen} title="Navigation" side="left"><Sidebar mobile onNavigate={() => setNavOpen(false)} /></Sheet>
       <div className="flex min-w-0 flex-1 flex-col">

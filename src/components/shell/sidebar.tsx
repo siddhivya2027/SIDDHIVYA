@@ -31,6 +31,8 @@ export function Sidebar({ mobile, onNavigate }: { mobile?: boolean; onNavigate?:
   const collapsedPref = useStore((s) => s.sidebarCollapsed);
   const set = useStore((s) => s.set);
   const collapsed = !mobile && collapsedPref;
+  // The most specific menu entry wins (so /studio/reel lights "Reel maker", not "Creative Studio").
+  const bestMatch = NAV.flatMap((g) => g.items).filter((i) => path === i.href || path.startsWith(i.href + "/")).sort((x, y) => y.href.length - x.href.length)[0]?.href;
   return (
     <aside className={cn("flex h-full shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200", mobile ? "w-full border-0" : collapsed ? "w-[60px]" : "w-[236px]")}>
       <div className={cn("flex h-14 items-center gap-2.5 border-b border-line", collapsed ? "justify-center px-0" : "px-4")}>
@@ -48,7 +50,7 @@ export function Sidebar({ mobile, onNavigate }: { mobile?: boolean; onNavigate?:
             {!collapsed ? <p className="mb-1 px-2 text-[11.5px] font-medium text-faint">{g.group}</p> : <div className="mx-2 mb-2 h-px bg-line" />}
             <ul className="space-y-0.5">
               {g.items.map((it) => {
-                const active = path === it.href || path.startsWith(it.href + "/");
+                const active = it.href === bestMatch;
                 const link = (
                   <Link href={it.href} onClick={onNavigate} aria-current={active ? "page" : undefined}
                     className={cn("flex h-8 items-center gap-2.5 rounded-md text-[13px] transition-colors", collapsed ? "justify-center px-0" : "px-2", active ? "bg-accent-soft font-medium text-accent" : "text-muted hover:bg-raised hover:text-ink")}>

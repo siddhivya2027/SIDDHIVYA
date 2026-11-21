@@ -12,6 +12,13 @@ credentials are required to run or present it.
 > to live marketplace accounts."* No live marketplace or Meta connection is ever claimed. See
 > [`docs/DEMO_MODE.md`](docs/DEMO_MODE.md).
 
+## One-Click Launch
+
+Add a product once → SIDDHIVYA writes the listing for Amazon, Flipkart, Meesho, Blinkit, Zepto, Swiggy Instamart,
+Facebook, Instagram, WhatsApp and Google, shows profit after each app's fees, gets the seller's approval on his
+phone, and one click sends it everywhere. Plus stock sync, Search Everywhere (SEO/AEO/GEO/AIO/AXO), orders & money,
+Telegram alerts, WhatsApp offers and a reel maker. See **docs/LAUNCH.md** for what each channel needs.
+
 ## Quick start
 
 ```bash

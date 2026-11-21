@@ -5,6 +5,7 @@ import { BRAND_DEFAULTS } from "@/config/brand";
 import { EMPLOYEES } from "./demo/catalog";
 import type { Campaign, CampaignStatus, Client, MarketplaceFilter } from "./demo/types";
 import type { CreativeProject } from "./studio/types";
+import type { AlertLog, AlertRules, LaunchProduct, OptIn, SellerSetup, Settlement, VisibilityCheck } from "./launch/types";
 
 export type Role = "admin" | "manager" | "analyst" | "viewer";
 export const ROLE_LABEL: Record<Role, string> = { admin: "Agency Admin", manager: "Account Manager", analyst: "Analyst", viewer: "Client Viewer" };
@@ -59,6 +60,16 @@ const initial = () => ({
   clientTeams: {} as Record<string, string[]>,
   siteLeads: [] as SiteLead[],
   workspace: null as AgencyWorkspace | null,
+  /* ---- One-Click Launch (kept when demo data is reset: this is real work) ---- */
+  launches: [] as LaunchProduct[],
+  sellerSetup: {} as Record<string, SellerSetup>,
+  alertRules: { lowStockUnits: 20, dailyReport: true, reportHour: 9, onOrder: false, onApproval: true } as AlertRules,
+  alertLog: [] as AlertLog[],
+  optIns: [] as OptIn[],
+  settlements: [] as Settlement[],
+  visibility: [] as VisibilityCheck[],
+  /** Demo mode only: channels without keys are shown as "Demo live" so the full flow can be presented. */
+  simulatePublish: true,
   settings: {
     workspaceName: "SIDDHIVYA Agency Workspace",
     timezone: "Asia/Kolkata",
@@ -121,7 +132,7 @@ export const useStore = create<Data & Actions>()(
       deleteProject: (id) => set((s) => ({ projects: s.projects.filter((x) => x.id !== id) })),
       addReport: (r) => { set((s) => ({ reports: [{ ...r, id: uid(), ts: Date.now(), by: s.session?.name ?? "Demo user" }, ...s.reports].slice(0, 50) })); get().log(`Exported ${r.format} report`, r.title); },
       updateSettings: (fn) => set((s) => ({ settings: fn(s.settings) })),
-      resetDemo: () => { const { session, theme, siteLeads, workspace } = get(); set({ ...initial(), session, theme, siteLeads, workspace, settings: { ...initial().settings, workspaceName: workspace ? `${workspace.agency} workspace` : initial().settings.workspaceName } }); get().log("Reset demo data", "Workspace"); },
+      resetDemo: () => { const { session, theme, siteLeads, workspace, launches, sellerSetup, alertRules, alertLog, optIns, settlements, visibility } = get(); set({ ...initial(), session, theme, siteLeads, workspace, launches, sellerSetup, alertRules, alertLog, optIns, settlements, visibility, settings: { ...initial().settings, workspaceName: workspace ? `${workspace.agency} workspace` : initial().settings.workspaceName } }); get().log("Reset demo data", "Workspace"); },
       addSiteLead: (l) => set((s) => ({ siteLeads: [{ ...l, id: uid(), ts: Date.now() }, ...s.siteLeads].slice(0, 100) })),
       createWorkspace: (w) => {
         const workspace = { ...w, createdAt: Date.now() };
