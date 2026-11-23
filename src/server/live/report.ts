@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/server/db";
 import { sendTelegram } from "@/server/launch/notify";
-import type { AlertRules, LaunchProduct, SellerSetup, Settlement } from "@/lib/launch/types";
+import type { AlertRules, LaunchProduct, ManualOrder, SellerSetup, Settlement } from "@/lib/launch/types";
 import type { Client } from "@/lib/demo/types";
 
 /** Builds the daily report from the database (real orders + imported settlements) and sends it on Telegram. */
@@ -10,16 +10,18 @@ const LABEL: Record<string, string> = { amazon: "Amazon", flipkart: "Flipkart", 
 
 export async function buildReports() {
   const d = db();
-  const docs = await d.doc.findMany({ where: { kind: { in: ["launch", "seller", "setup", "settings", "settlement"] } } });
+  const docs = await d.doc.findMany({ where: { kind: { in: ["launch", "seller", "setup", "settings", "settlement", "manualorder"] } } });
   const of = <T,>(k: string) => docs.filter((x) => x.kind === k).map((x) => ({ id: x.id, clientId: x.clientId, data: x.data as unknown as T }));
-  const launches = of<LaunchProduct>("launch").map((x) => x.data);
-  const sellers = of<Client>("seller").map((x) => x.data);
+  // Skip damaged or half-saved records instead of stopping everyone's report.
+  const launches = of<LaunchProduct>("launch").map((x) => x.data).filter((l) => l && typeof l === "object" && typeof l.name === "string");
+  const sellers = of<Client>("seller").map((x) => x.data).filter((c) => c && typeof c.id === "string");
   const setups = Object.fromEntries(of<SellerSetup>("setup").map((x) => [x.id, x.data]));
   const rules = (of<AlertRules>("settings").find((x) => x.id === "alertRules")?.data) ?? { lowStockUnits: 20, dailyReport: true } as AlertRules;
-  const settlements = of<Settlement>("settlement").map((x) => x.data);
+  const settlements = of<Settlement>("settlement").map((x) => x.data).filter((x) => x && typeof x.date === "string");
   const since = new Date(Date.now() - 86400000);
   const orders = await d.order.findMany({ where: { ts: { gte: new Date(Date.now() - 400 * 86400000) } }, select: { clientId: true, channel: true, ts: true, qty: true, sale: true, sku: true, status: true } });
-  const good = orders.filter((o) => !/cancel/i.test(o.status));
+  const hand = of<ManualOrder>("manualorder").map((x) => x.data).filter((m) => m && typeof m.ts === "number").map((m) => ({ clientId: m.clientId, channel: m.channel as string, ts: new Date(m.ts), qty: m.qty, sale: m.sale, sku: launches.find((l) => l.id === m.launchId)?.sku ?? null, status: "By hand" }));
+  const good = [...orders, ...hand].filter((o) => !/cancel/i.test(o.status));
 
   const forSeller = (cid?: string, name = "Agency") => {
     const L = launches.filter((l) => !cid || l.clientId === cid);
@@ -29,8 +31,8 @@ export async function buildReports() {
     const sales = day.reduce((a, o) => a + o.sale, 0) + S.reduce((a, s) => a + s.sale, 0);
     const byApp = Object.entries(day.reduce<Record<string, number>>((m, o) => ({ ...m, [o.channel]: (m[o.channel] ?? 0) + 1 }), {})).map(([k, n]) => `${LABEL[k] ?? k} ${n}`).join(", ");
     const sold = (p: LaunchProduct) => O.filter((o) => o.clientId === p.clientId && p.sku && o.sku === p.sku).reduce((a, o) => a + o.qty, 0);
-    const low = L.filter((p) => p.liveSince && p.stock - sold(p) <= rules.lowStockUnits).map((p) => `${p.name} (${Math.max(0, p.stock - sold(p))} left)`);
-    const waiting = L.filter((p) => p.approval.state === "sent").map((p) => p.name);
+    const low = L.filter((p) => p.liveSince && (p.stock ?? 0) - sold(p) <= rules.lowStockUnits).map((p) => `${p.name} (${Math.max(0, p.stock - sold(p))} left)`);
+    const waiting = L.filter((p) => p.approval?.state === "sent").map((p) => p.name);
     const text = [
       `📊 SIDDHIVYA daily report — ${name}`,
       `Last 24 hours: ${day.length + S.length} orders, sales ${rs(sales)}.`,
@@ -51,7 +53,7 @@ export async function sendAllReports() {
   if (rules.dailyReport === false) return { skipped: "Daily report is switched off on the Alerts page.", sent };
   for (const s of sellers) {
     const chat = setups[s.id]?.telegramChatId;
-    if (chat) sent[s.name] = (await sendTelegram(forSeller(s.id, s.name).text, chat)).state;
+    if (chat) { try { sent[s.name] = (await sendTelegram(forSeller(s.id, s.name).text, chat)).state; } catch { sent[s.name] = "failed"; } }
   }
   sent.Agency = (await sendTelegram(forSeller(undefined, "All sellers").text)).state;
   return { sent };

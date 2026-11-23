@@ -7,13 +7,21 @@ import { rnd } from "@/lib/demo/generate";
 import { LIVE } from "@/lib/live/mode";
 import { CH } from "./channels";
 import { profitOn } from "./engine";
-import type { ChannelId, LaunchProduct, Settlement } from "./types";
+import type { ChannelId, LaunchProduct, ManualOrder, Settlement } from "./types";
 
 export interface Order { id: string; launchId: string; clientId: string; channel: ChannelId; ts: number; qty: number; sale: number; fees: number; payout: number; payoutOn: number; sample: boolean; status?: string; orderId?: string }
 
 const RATE: Partial<Record<ChannelId, number>> = { amazon: 6, flipkart: 4, meesho: 5, blinkit: 7, zepto: 5, instamart: 4 }; // sample orders per day
 const SETTLE_DAYS: Partial<Record<ChannelId, number>> = { amazon: 7, flipkart: 10, meesho: 7, blinkit: 15, zepto: 15, instamart: 15 };
 const DAY = 86400000;
+
+/** Orders typed in by hand. Direct sales (WhatsApp / phone / shop) are paid on the spot; app orders follow the app's payout days. */
+export function manualToOrders(list: ManualOrder[]): Order[] {
+  return list.map((m) => {
+    const direct = CH[m.channel]?.kind === "social";
+    return { id: m.id, orderId: m.note ? `${m.id} · ${m.note}` : m.id, status: "By hand", launchId: m.launchId, clientId: m.clientId, channel: m.channel, ts: m.ts, qty: m.qty, sale: m.sale, fees: m.fees, payout: m.sale - m.fees, payoutOn: direct ? m.ts : m.ts + (SETTLE_DAYS[m.channel] ?? 7) * DAY, sample: false };
+  }).sort((a, b) => b.ts - a.ts);
+}
 
 export function sampleOrders(p: LaunchProduct, now = Date.now()): Order[] {
   if (LIVE || !p.liveSince) return []; // live mode shows only real orders

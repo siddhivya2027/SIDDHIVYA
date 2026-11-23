@@ -7,10 +7,10 @@
  */
 import { toast } from "@/components/shared";
 import type { Client } from "@/lib/demo/types";
-import type { AlertLog, AlertRules, LaunchProduct, OptIn, SellerSetup, Settlement, VisibilityCheck } from "@/lib/launch/types";
+import type { AlertLog, AlertRules, LaunchProduct, ManualOrder, OptIn, PlaybookState, SellerSetup, Settlement, VisibilityCheck } from "@/lib/launch/types";
 import { useStore, type SiteLead } from "@/lib/store";
 
-type Kind = "launch" | "seller" | "setup" | "optin" | "settlement" | "visibility" | "settings" | "alertlog" | "lead";
+type Kind = "launch" | "seller" | "setup" | "optin" | "settlement" | "visibility" | "settings" | "alertlog" | "lead" | "manualorder" | "playbook";
 interface Item { kind: Kind; id: string; clientId?: string | null; data: unknown }
 interface RemoteDoc { kind: Kind; id: string; data: unknown; at: number }
 
@@ -22,6 +22,8 @@ const ARRAYS: { slice: keyof S; kind: Kind; client: (x: never) => string | null 
   { slice: "settlements", kind: "settlement", client: (x: Settlement) => x.clientId },
   { slice: "visibility", kind: "visibility", client: () => null },
   { slice: "alertLog", kind: "alertlog", client: () => null },
+  { slice: "manualOrders", kind: "manualorder", client: (x: ManualOrder) => x.clientId },
+  { slice: "playbook", kind: "playbook", client: (x: PlaybookState) => x.clientId },
 ] as never;
 
 let applying = false;
@@ -89,6 +91,8 @@ export async function pull(): Promise<boolean> {
       settlements: by("settlement") as Settlement[],
       visibility: by("visibility") as VisibilityCheck[],
       alertLog: (by("alertlog") as AlertLog[]).sort((a, b) => b.ts - a.ts).slice(0, 200),
+      manualOrders: by("manualorder") as ManualOrder[],
+      playbook: by("playbook") as PlaybookState[],
       siteLeads: (by("lead") as SiteLead[]).sort((a, b) => b.ts - a.ts),
       alertRules: rules ?? s.alertRules,
       clientId: s.clientId && (by("seller") as Client[]).some((c) => c.id === s.clientId) ? s.clientId : ((by("seller") as Client[])[0]?.id ?? ""),

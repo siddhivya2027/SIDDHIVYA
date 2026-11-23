@@ -58,13 +58,15 @@ function descriptionFor(p: LaunchProduct): string {
   ].filter(Boolean).join(" ");
 }
 
-const tags = (p: LaunchProduct) => [p.brand, p.name, ...words(p.keywords)].map((w) => "#" + w.replace(/[^\p{L}\p{N}]/gu, "")).filter((t) => t.length > 2).slice(0, 8).join(" ");
+const areasOf = (p: LaunchProduct) => words(p.areas ?? "");
+const tags = (p: LaunchProduct) => p.manualSearch?.hashtags?.trim() ? clean(p.manualSearch.hashtags) : [p.brand, p.name, ...words(p.keywords), ...areasOf(p).slice(0, 1)].map((w) => "#" + w.replace(/[^\p{L}\p{N}]/gu, "")).filter((t) => t.length > 2).slice(0, 8).join(" ");
 
 export function captionFor(p: LaunchProduct, ch: "facebook" | "instagram" | "whatsapp", where: string[] = []): string {
   const price = p.price ? `Rs ${p.price.toLocaleString("en-IN")}` : "";
   const shops = where.length ? `Order now on ${where.join(", ")}.` : "Order now.";
   if (ch === "whatsapp") return cut(`${p.name} ${p.size} — ${price}. ${shops}`, 300);
-  const body = [`${p.brand} ${p.name} (${p.size})`, sentence(p.story), p.ingredients ? `Made with ${lowerFirst(p.ingredients).replace(/\.$/, "")}.` : "", price ? `${price} · ${shops}` : shops].filter(Boolean).join("\n\n");
+  const area = areasOf(p)[0];
+  const body = [`${p.brand} ${p.name} (${p.size})`, sentence(p.story), area ? `📍 ${area}` : "", p.ingredients ? `Made with ${lowerFirst(p.ingredients).replace(/\.$/, "")}.` : "", price ? `${price} · ${shops}` : shops].filter(Boolean).join("\n\n");
   return ch === "instagram" ? `${body}\n\n${tags(p)}` : body;
 }
 
@@ -156,6 +158,8 @@ export function writeFaq(p: LaunchProduct, sellerCity = ""): { q: string; a: str
     isFood(p) && p.shelfLifeDays && { q: `How long does ${n} stay fresh?`, a: `Best before ${p.shelfLifeDays} days from the packing date. Store in a cool, dry place${p.category === "sweets" ? " and refrigerate after opening" : ""}.` },
     (p.story || sellerCity) && { q: `Who makes ${p.brand} ${n}?`, a: sentence(p.story || `${p.brand}, ${sellerCity}`) },
     where.length && { q: `Where can I buy ${p.brand} ${n} online?`, a: `On ${where.join(", ")}${p.price ? `, at Rs ${p.price.toLocaleString("en-IN")} for ${p.size}` : ""}.` },
+    areasOf(p).length && { q: `Where can I buy ${n} in ${areasOf(p)[0]}?`, a: `${p.brand}${sellerCity ? `, ${sellerCity},` : ""} sells ${n}${where.length ? ` on ${where.join(", ")}` : ""}${areasOf(p).length > 1 ? ` and delivers around ${areasOf(p).slice(1, 4).join(", ")}` : ""}.` },
+    words(p.localNames ?? "").length && { q: `What else is ${n} called?`, a: `${n} is also called ${words(p.localNames ?? "").join(", ")}.` },
     p.price && p.mrp > p.price && { q: `Is there a discount on ${n}?`, a: `Yes — Rs ${p.price.toLocaleString("en-IN")} against an MRP of Rs ${p.mrp.toLocaleString("en-IN")}.` },
   ].filter(Boolean) as { q: string; a: string }[];
   return faq;
@@ -167,6 +171,7 @@ export function structuredData(p: LaunchProduct, pageUrl = ""): string {
     {
       "@context": "https://schema.org", "@type": "Product", name: `${p.brand} ${p.name}`.trim(), sku: p.sku || undefined, brand: { "@type": "Brand", name: p.brand },
       description: descriptionFor(p), size: p.size || undefined, category: FOOD_LABEL[p.category],
+      keywords: [...words(p.keywords), ...words(p.localNames ?? ""), ...areasOf(p)].join(", ") || undefined,
       offers: { "@type": "Offer", priceCurrency: "INR", price: p.price, availability: p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: offerUrl },
     },
     p.faq.length ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: p.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) } : null,
@@ -184,6 +189,8 @@ export function aiSummary(p: LaunchProduct, sellerCity = ""): string {
     "",
     `- Brand: ${p.brand}`,
     sellerCity ? `- Made in: ${sellerCity}` : "",
+    words(p.localNames ?? "").length ? `- Also called: ${words(p.localNames ?? "").join(", ")}` : "",
+    areasOf(p).length ? `- Sold in / delivers to: ${areasOf(p).join(", ")}` : "",
     `- Pack size: ${p.size}`,
     `- Price: Rs ${p.price} (MRP Rs ${p.mrp || p.price})`,
     `- Availability: ${p.stock > 0 ? "in stock" : "out of stock"}`,
@@ -204,7 +211,7 @@ export function searchScores(p: LaunchProduct): SearchScore[] {
     const got = parts.reduce((a, [ok, w, t]) => a + g(ok, w, t, todo), 0);
     return { id, plain, score: Math.round((got / total) * 100), todo };
   };
-  const kw = words(p.keywords);
+  const kw = [...words(p.keywords), ...words(p.localNames ?? "")];
   const amz = p.listings.find((l) => l.channel === "amazon");
   const desc = descriptionFor(p);
   return [
@@ -223,6 +230,7 @@ export function searchScores(p: LaunchProduct): SearchScore[] {
     mk("GEO", "Be named by ChatGPT, Gemini and Perplexity", [
       [!!p.story, 2, "Add who makes it and what makes it different — AI engines quote this."],
       [!!p.brand, 1, "Use one brand name everywhere."],
+      [areasOf(p).length > 0, 1, "Add the town/area to win first (Manual keywords on the product)."],
       [p.listings.filter((l) => l.enabled && CH[l.channel].kind !== "social").length >= 3, 2, "Sell on 3+ trusted sites so AI engines find it in more places."],
       [p.faq.length >= 3, 1, "Publish the FAQ on the seller's page."],
     ]),

@@ -1,14 +1,14 @@
 "use client";
-import { CircleAlert, CircleCheck, ExternalLink, RotateCcw, TriangleAlert, Upload } from "lucide-react";
+import { CircleAlert, CircleCheck, ExternalLink, Hand, RotateCcw, TriangleAlert, Upload } from "lucide-react";
 import * as React from "react";
 import { JobBadge } from "@/components/launch/bits";
-import { Badge, Button, Card, CardHeader, Switch, cn } from "@/components/ui";
+import { Badge, Button, Card, CardHeader, Field, Input, Modal, Switch, cn } from "@/components/ui";
 import { SITE } from "@/config/site";
 import { fmtDateTime } from "@/lib/dates";
 import { CH } from "@/lib/launch/channels";
 import { blocking, readiness } from "@/lib/launch/engine";
 import { fetchChannelStatus, publishEverywhere, type ChannelStatus } from "@/lib/launch/publish-client";
-import { setJob, useSellers, useSetup } from "@/lib/launch/state";
+import { markByHand, setJob, useSellers, useSetup } from "@/lib/launch/state";
 import type { ChannelId, LaunchProduct } from "@/lib/launch/types";
 import { useStore } from "@/lib/store";
 
@@ -67,10 +67,15 @@ export function PublishCard({ p }: { p: LaunchProduct }) {
   const city = sellers.find((c) => c.id === p.clientId)?.city ?? "";
   const on = p.listings.filter((l) => l.enabled);
   const retry = (ch: ChannelId) => publishEverywhere(p, { simulate: !!status?.demoMode && simulate, city, siteUrl: SITE.url, only: [ch] });
+  const session = useStore((s) => s.session);
+  const [hand, setHand] = React.useState<ChannelId | null>(null);
+  const [handUrl, setHandUrl] = React.useState("");
+  const [handNote, setHandNote] = React.useState("");
+  const saveHand = () => { if (!hand) return; markByHand(p.id, hand, session?.name ?? "Team", handUrl.trim(), handNote.trim()); setHand(null); setHandUrl(""); setHandNote(""); };
   const mark = (ch: ChannelId, state: "uploaded" | "live") => setJob(p.id, { channel: ch, state, message: state === "uploaded" ? "Uploaded in the portal by the team — waiting for the app's own approval." : "Confirmed live by the team.", ts: Date.now() });
   return (
     <Card>
-      <CardHeader title="8 · ONE CLICK — publish everywhere" subtitle="Direct channels are sent through their APIs. Meesho, Blinkit, Zepto, Instamart and Google get a ready upload file. Every answer is recorded here." action={
+      <CardHeader title="9 · ONE CLICK — publish everywhere" subtitle="Direct channels are sent through their APIs. Meesho, Blinkit, Zepto, Instamart and Google get a ready upload file. Every answer is recorded here." action={
         status?.demoMode ? <label className="flex items-center gap-2 text-[12.5px] text-muted"><Switch checked={simulate} onCheckedChange={(v) => useStore.setState({ simulatePublish: v })} label="Show unconnected channels as demo" />Demo: show unconnected channels as &quot;Demo live&quot;</label> : null
       } />
       <div className="grid gap-5 px-5 pb-5 lg:grid-cols-[320px_1fr]">
@@ -91,6 +96,7 @@ export function PublishCard({ p }: { p: LaunchProduct }) {
                   <p className="flex flex-wrap items-center gap-2 text-[13.5px] font-semibold">{info.label}
                     {info.delivery === "api" ? <Badge tone={env?.configured ? "pos" : "neutral"}>{env ? (env.configured ? "Connected" : "Keys not added") : "Direct"}</Badge> : <Badge tone="warn">Upload file</Badge>}
                     {j && <JobBadge state={j.state} />}
+                    {j?.manual && <Badge tone="ai">By hand</Badge>}
                   </p>
                   <p className="mt-0.5 text-[12.5px] text-muted">{j ? j.message : info.how}</p>
                   {j && <p className="mt-0.5 text-[11.5px] text-faint">{fmtDateTime(j.ts)}</p>}
@@ -99,6 +105,7 @@ export function PublishCard({ p }: { p: LaunchProduct }) {
                   {j?.url && <a href={j.url} target="_blank" rel="noreferrer" className="inline-flex h-7 items-center gap-1 rounded-md border border-line px-2.5 text-[12.5px] font-medium hover:bg-raised"><ExternalLink className="size-3.5" />Open</a>}
                   {j?.state === "needs_upload" && <Button size="sm" onClick={() => mark(l.channel, "uploaded")}><Upload />Mark uploaded</Button>}
                   {j?.state === "uploaded" && <Button size="sm" onClick={() => mark(l.channel, "live")}>Mark live</Button>}
+                  {j?.state !== "live" && <Button size="sm" variant="ghost" onClick={() => setHand(l.channel)}><Hand />Done by hand</Button>}
                   {j && j.state !== "sending" && <Button size="sm" variant="ghost" onClick={() => void retry(l.channel)}><RotateCcw />{j.state === "needs_upload" || j.state === "uploaded" ? "Download again" : "Send again"}</Button>}
                 </div>
               </div>
@@ -106,6 +113,12 @@ export function PublishCard({ p }: { p: LaunchProduct }) {
           })}
         </div>
       </div>
+      <Modal open={!!hand} onOpenChange={(o) => { if (!o) setHand(null); }} title={hand ? `${CH[hand].label}: done by hand` : ""} description="Use this when the automatic send failed or the app has no API — the team listed or posted it in the app's own portal." footer={<><Button onClick={() => setHand(null)}>Cancel</Button><Button variant="primary" onClick={saveHand}><Hand />Mark live (by hand)</Button></>}>
+        <div className="space-y-3">
+          <Field label="Link to the live listing or post (optional)"><Input value={handUrl} onChange={(e) => setHandUrl(e.target.value)} placeholder="https://www.amazon.in/dp/…" /></Field>
+          <Field label="Note (optional)"><Input value={handNote} onChange={(e) => setHandNote(e.target.value)} placeholder="Listed via Seller Central, ASIN B0…" /></Field>
+        </div>
+      </Modal>
     </Card>
   );
 }

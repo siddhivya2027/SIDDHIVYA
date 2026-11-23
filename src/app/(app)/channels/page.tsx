@@ -8,7 +8,7 @@ import { Badge, Button, Card, CardHeader, Field, Input, Select, Switch } from "@
 import { SITE } from "@/config/site";
 import { CHANNELS, KIND_LABEL } from "@/lib/launch/channels";
 import { writeListings } from "@/lib/launch/engine";
-import { sampleOrders, unitsSold, type Order } from "@/lib/launch/orders";
+import { manualToOrders, sampleOrders, unitsSold, type Order } from "@/lib/launch/orders";
 import { LIVE } from "@/lib/live/mode";
 import { useLiveOrders } from "@/lib/live/orders";
 import { SellerKeys } from "@/components/live/seller-keys";
@@ -22,7 +22,7 @@ const ACC: { value: AccountState; label: string }[] = [{ value: "not_started", l
 function StockRow({ p, orders }: { p: LaunchProduct; orders: Order[] }) {
   const status = useChannelStatus(p.clientId);
   const simulate = useStore((s) => s.simulatePublish);
-  const sold = unitsSold(LIVE ? orders : sampleOrders(p), p.id);
+  const sold = unitsSold(LIVE ? orders : [...orders, ...sampleOrders(p)], p.id);
   const [total, setTotal] = React.useState(String(p.stock));
   const on = p.listings.filter((l) => l.enabled && l.stock > 0);
   const syncable = p.listings.filter((l) => l.enabled && (l.channel === "amazon" || l.channel === "flipkart") && isLive(p.jobs[l.channel]?.state)).map((l) => l.channel);
@@ -57,7 +57,9 @@ export default function ChannelsPage() {
   const [seller, setSeller] = React.useState(clientId);
   const [tick, setTick] = React.useState(0);
   const status = useChannelStatus(seller, tick);
-  const { orders } = useLiveOrders(seller);
+  const { orders: liveOrders } = useLiveOrders(seller);
+  const manualAll = useStore((s) => s.manualOrders);
+  const orders = React.useMemo(() => [...liveOrders, ...manualToOrders(manualAll)], [liveOrders, manualAll]);
   const setup = useStore((s) => s.sellerSetup[seller]) ?? emptySetup();
   const launches = useStore((s) => s.launches).filter((l) => l.clientId === seller);
   const up = <K extends keyof typeof setup>(k: K, v: (typeof setup)[K]) => setSellerSetup(seller, (s) => ({ ...s, [k]: v }));

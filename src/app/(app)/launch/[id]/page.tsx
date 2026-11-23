@@ -9,6 +9,7 @@ import { ListingsCard } from "@/components/launch/listings";
 import { PhotosCard, ProductForm } from "@/components/launch/product-form";
 import { ChecksList, OneClickButton, PublishCard } from "@/components/launch/publish";
 import { SearchCard } from "@/components/launch/search-card";
+import { ManualKeywordsCard } from "@/components/launch/manual-keywords";
 import { Badge, Button, Card, EmptyState } from "@/components/ui";
 import { inr } from "@/lib/format";
 import { isSellerLogin } from "@/lib/live/auth-client";
@@ -16,7 +17,7 @@ import { SellerProductView } from "@/components/live/seller-product";
 import { useStore } from "@/lib/store";
 import { deleteLaunch, useLaunch, useSellers } from "@/lib/launch/state";
 
-const STEPS = [["#product", "Product"], ["#photos", "Photos"], ["#listings", "Where to sell"], ["#creative", "Post image"], ["#ads", "Ads"], ["#search", "Search"], ["#approval", "Approval"], ["#publish", "ONE CLICK"]] as const;
+const STEPS = [["#product", "Product"], ["#photos", "Photos"], ["#listings", "Where to sell"], ["#creative", "Post image"], ["#ads", "Ads"], ["#search", "Search"], ["#manual", "Manual words"], ["#approval", "Approval"], ["#publish", "ONE CLICK"]] as const;
 
 export default function LaunchProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -52,6 +53,7 @@ export default function LaunchProductPage() {
           <section id="creative" className="scroll-mt-16"><CreativeCard p={p} /></section>
           <section id="ads" className="scroll-mt-16"><AdsCard p={p} /></section>
           <section id="search" className="scroll-mt-16"><SearchCard p={p} /></section>
+          <section id="manual" className="scroll-mt-16"><ManualKeywordsCard p={p} /></section>
           <section id="approval" className="scroll-mt-16"><ApprovalCard p={p} /></section>
           <section id="publish" className="scroll-mt-16"><PublishCard p={p} /></section>
         </div>

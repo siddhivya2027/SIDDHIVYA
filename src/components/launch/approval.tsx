@@ -68,7 +68,7 @@ export function ApprovalCard({ p }: { p: LaunchProduct }) {
 
   return (
     <Card>
-      <CardHeader title="7 · Seller approval" subtitle="The seller sees the product, the price on every app and his profit — and taps APPROVE on his phone. Nothing goes live before that." action={<Badge tone={APPROVAL[a.state].tone}>{APPROVAL[a.state].label}</Badge>} />
+      <CardHeader title="8 · Seller approval" subtitle="The seller sees the product, the price on every app and his profit — and taps APPROVE on his phone. Nothing goes live before that." action={<Badge tone={APPROVAL[a.state].tone}>{APPROVAL[a.state].label}</Badge>} />
       <div className="space-y-4 px-5 pb-5">
         <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
           <Field label="Seller's WhatsApp number (with country code)" hint="Saved for this seller.">

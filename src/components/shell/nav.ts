@@ -1,4 +1,4 @@
-import { BarChart3, BellRing, Building2, UsersRound, Handshake, Clapperboard, FileText, Inbox, LayoutDashboard, LineChart, Megaphone, Package, Palette, Rocket, Search, Settings, ShoppingBag, ShoppingCart, Sparkles, Store, Wallet, type LucideIcon } from "lucide-react";
+import { BarChart3, BellRing, Hand, Building2, UsersRound, Handshake, Clapperboard, FileText, Inbox, LayoutDashboard, LineChart, Megaphone, Package, Palette, Rocket, Search, Settings, ShoppingBag, ShoppingCart, Sparkles, Store, Wallet, type LucideIcon } from "lucide-react";
 
 export interface NavItem { href: string; label: string; icon: LucideIcon; badge?: string }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -7,6 +7,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     { href: "/channels", label: "Channels & stock", icon: Store },
     { href: "/search", label: "Search Everywhere", icon: Search },
     { href: "/orders", label: "Orders & money", icon: Wallet },
+    { href: "/manual", label: "Manual push", icon: Hand },
     { href: "/alerts", label: "Alerts & offers", icon: BellRing },
   ] },
   { group: "Intelligence", items: [

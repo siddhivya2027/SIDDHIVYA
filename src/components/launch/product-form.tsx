@@ -61,6 +61,12 @@ export function ProductForm({ p }: { p: LaunchProduct }) {
         <Field label="Words buyers search for (comma separated)" hint="e.g. cashew sweet, diwali gift, kaju barfi">
           <Textarea rows={3} value={p.keywords} onChange={(e) => set("keywords", e.target.value)} />
         </Field>
+        <Field label="Town / areas to win first (MANUAL, comma separated)" hint="Town first, then nearby places. Used in local search words, posts, FAQ and the playbook.">
+          <Input value={p.areas ?? ""} onChange={(e) => set("areas", e.target.value)} placeholder="Vijayawada, Benz Circle, Guntur, Machilipatnam" />
+        </Field>
+        <Field label="Other names people type, local language too (MANUAL)" hint="e.g. kaju barfi, కాజు కట్లి, cashew burfi">
+          <Input value={p.localNames ?? ""} onChange={(e) => set("localNames", e.target.value)} />
+        </Field>
         <Field label="Amazon product type" hint="Shown in Seller Central when you add a product. Needed for automatic listing."><Input value={p.amazonProductType} onChange={(e) => set("amazonProductType", e.target.value.toUpperCase().replace(/\s+/g, "_"))} /></Field>
         <Field label="Flipkart FSN" hint="From Seller Hub after the first listing is approved."><Input value={p.flipkartFsn} onChange={(e) => set("flipkartFsn", e.target.value.toUpperCase())} /></Field>
       </div>

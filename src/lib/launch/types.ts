@@ -33,6 +33,9 @@ export interface PublishJob {
   url?: string;
   externalId?: string;
   ts: number;
+  /** Done by a person outside the software (API down, no API, or a channel listed by hand). */
+  manual?: boolean;
+  by?: string;
 }
 
 export type ApprovalState = "not_sent" | "sent" | "approved" | "changes";
@@ -84,7 +87,19 @@ export interface LaunchProduct {
   jobs: Partial<Record<ChannelId, PublishJob>>;
   faq: { q: string; a: string }[];
   liveSince?: number;
+  /** MANUAL: the town/area to win first and nearby places, comma separated (e.g. "Vijayawada, Benz Circle, Guntur"). */
+  areas?: string;
+  /** MANUAL: other names people type, incl. local language (e.g. "kaju barfi, కాజు కట్లి"). */
+  localNames?: string;
+  /** MANUAL overrides typed by the team — used instead of the automatic ones when filled. */
+  manualSearch?: { amazonBackend?: string; adKeywords?: string; negativeKeywords?: string; hashtags?: string };
 }
+
+/** An order the team types in by hand (phone, WhatsApp, shop counter, or a channel whose feed is not connected). */
+export interface ManualOrder { id: string; clientId: string; launchId: string; channel: ChannelId; ts: number; qty: number; sale: number; fees: number; note: string; by: string }
+
+/** Ticks on the "Customers not coming" playbook, one record per product. */
+export interface PlaybookState { id: string; clientId: string; done: Record<string, { at: number; by: string; note: string }> }
 
 export type AccountState = "not_started" | "applied" | "approved";
 /** Everything a seller must have once before selling. Kept per seller (client). */
