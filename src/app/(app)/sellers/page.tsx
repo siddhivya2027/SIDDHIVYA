@@ -1,12 +1,15 @@
 "use client";
-import { Handshake, KeyRound, Pencil, Plus, Trash2 } from "lucide-react";
+import { ClipboardCheck, Handshake, KeyRound, Pencil, Plus, Trash2 } from "lucide-react";
+import { SellerChecklist } from "@/components/live/seller-checklist";
+import { checklistStatus, doneCount, isFoodBusiness, SELLER_CHECKLIST } from "@/lib/launch/onboarding";
+import { SITE } from "@/config/site";
 import Link from "next/link";
 import * as React from "react";
 import { PageHeader, toast } from "@/components/shared";
 import { TempPassword } from "@/components/live/temp-password";
 import { Badge, Button, Card, CardHeader, EmptyState, Field, Input, Modal } from "@/components/ui";
 import type { Client } from "@/lib/demo/types";
-import { setSellerSetup, useSellers } from "@/lib/launch/state";
+import { emptySetup, setSellerSetup, useSellers } from "@/lib/launch/state";
 import { newId, useStore } from "@/lib/store";
 
 type Draft = { id?: string; name: string; city: string; industry: string; contactName: string; email: string; phone: string };
@@ -14,6 +17,7 @@ const empty: Draft = { name: "", city: "", industry: "Indian sweets", contactNam
 
 export default function SellersPage() {
   const sellers = useSellers();
+  const [checkFor, setCheckFor] = React.useState<string | null>(null);
   const launches = useStore((s) => s.launches);
   const setup = useStore((s) => s.sellerSetup);
   const [draft, setDraft] = React.useState<Draft | null>(null);
@@ -56,7 +60,7 @@ export default function SellersPage() {
                     <p className="text-muted">{c.contact.name || "No contact"}{c.contact.email ? ` · ${c.contact.email}` : ""}{st?.phone ? ` · +${st.phone}` : ""}</p>
                   </div>
                   <Badge>{n} product{n === 1 ? "" : "s"}</Badge>
-                  {st?.fssaiNumber ? <Badge tone="pos">FSSAI added</Badge> : <Badge tone="warn">FSSAI missing</Badge>}
+                  {(() => { const cs = checklistStatus(st ?? emptySetup(), { email: c.contact.email, maxPhotos: Math.max(0, ...launches.filter((l) => l.clientId === c.id).map((l) => l.photos.length)), agencyPhones: SITE.contact.phones, isFood: isFoodBusiness(c.industry) }); const n = doneCount(cs); return <button type="button" onClick={() => setCheckFor(c.id)} className="inline-flex items-center gap-1"><Badge tone={n === SELLER_CHECKLIST.length ? "pos" : n >= 5 ? "warn" : "neg"}><ClipboardCheck className="size-3" />Checklist {n}/{SELLER_CHECKLIST.length}</Badge></button>; })()}
                   <Link href="/channels" className="text-[12.5px] font-medium text-accent">Set-up & keys</Link>
                   <Button size="sm" onClick={() => void makeLogin(c)}><KeyRound />Give login</Button>
                   <Button size="icon" variant="ghost" aria-label="Edit seller" onClick={() => setDraft({ id: c.id, name: c.name, city: c.city, industry: c.industry, contactName: c.contact.name, email: c.contact.email, phone: st?.phone ?? "" })}><Pencil /></Button>
@@ -80,6 +84,7 @@ export default function SellersPage() {
         )}
       </Modal>
       <TempPassword info={temp} onClose={() => setTemp(null)} />
+      <SellerChecklist sellerId={checkFor} onClose={() => setCheckFor(null)} />
     </>
   );
 }

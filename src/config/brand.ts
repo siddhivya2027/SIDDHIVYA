@@ -9,7 +9,7 @@ export const BRAND_DEFAULTS = {
   /** Leave empty until the agency email is ready — email links hide themselves when this is empty. */
   contactEmail: "",
   /** WhatsApp number with country code, digits only (e.g. "919876543210"). Leave empty to hide WhatsApp links. */
-  whatsapp: "918072276620",
+  whatsapp: "919063616726",
   /** Technology partner credit shown in small print in the footer and sign-in screen. Set name to "" to hide. */
   poweredBy: { name: "Entraiot Solutions", url: "https://entrabuild.com" },
 };

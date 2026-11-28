@@ -8,6 +8,8 @@ import { ADD_ONS, planPrice, SELLER_PLANS, SHOW_PRICES } from "@/lib/site/pricin
 import { FlipWords, HScroll, LotusField, Magnetic, Odometer, RiseWords, SpeedMarquee, Spotlight, Unfold, useScrollProgress } from "./motion";
 import { ECOMMERCE_CALCS, FEE_CONFIGS, QUICK_CALCS } from "@/lib/site/fees";
 import { calcHref } from "./fee-calculators";
+import { SELLER_CHECKLIST, type CheckId } from "@/lib/launch/onboarding";
+import { Banknote, Camera as CameraIcon, IdCard, KeyRound, MapPin, ReceiptText, Smartphone, UtensilsCrossed } from "lucide-react";
 
 /* ---------- Reveal on scroll (content stays readable if JS or motion is off) ---------- */
 export function Reveal({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -407,6 +409,56 @@ export function CtaBand() {
         <div className="relative mt-7 flex flex-wrap justify-center gap-3">
           <GlowButton href="#enquiry">Get a free growth plan</GlowButton>
           {SITE.contact.whatsapp && <a href={waHref("Hi, I'd like to grow my online shop.")} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center rounded-full border border-line-strong px-6 text-[14.5px] font-semibold text-accent hover:bg-raised">WhatsApp us</a>}
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ---------- What a seller needs before we start ---------- */
+const CHECK_ICON: Record<CheckId, React.ComponentType<{ className?: string }>> = {
+  gst: ReceiptText, pan: IdCard, bank: Banknote, fssai: UtensilsCrossed, own_contact: Smartphone, address: MapPin, photos: CameraIcon, team_access: KeyRound,
+};
+export function SellerChecklistSection() {
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <SectionHead id="checklist" eyebrow="BEFORE WE START" title="What your shop needs" accent="to sell online" body="Keep these ready. Your accounts stay in your own name — we only help you run them." />
+      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {SELLER_CHECKLIST.map((c, i) => {
+          const Icon = CHECK_ICON[c.id];
+          return (
+            <Reveal key={c.id} delay={i * 50}>
+              <Spotlight className="h-full rounded-3xl"><div className="flex h-full flex-col rounded-3xl border border-line bg-surface/70 p-5">
+                <div className="flex items-center justify-between"><span className="flex size-11 items-center justify-center rounded-2xl bg-ai-soft text-ai"><Icon className="size-5" /></span><span className="em-s text-[28px] leading-none">{String(i + 1).padStart(2, "0")}</span></div>
+                <p className="mt-4 text-[15px] font-semibold">{c.title}</p>
+                <p className="mt-1 text-[12.5px] font-medium text-accent">{c.short}</p>
+                <p className="mt-2 text-[13px] text-muted">{c.why}</p>
+              </div></Spotlight>
+            </Reveal>
+          );
+        })}
+      </div>
+      <Reveal className="mt-6">
+        <div className="gold-frame grid gap-5 rounded-3xl border border-line bg-surface p-6 md:grid-cols-[1.3fr_1fr]">
+          <div>
+            <p className="flex items-center gap-2 text-[17px] font-semibold"><ShieldCheck className="size-5 text-pos" />Your shop, your name, your number</p>
+            <ul className="mt-3 space-y-2 text-[14px] text-muted">
+              {[
+                "Your Amazon, Flipkart and Meesho accounts are opened in your name, with your own mobile number, GST, PAN and bank account.",
+                "Sale money goes straight to your bank — never through us.",
+                "You add our team as a user from your seller panel. You never share your password or OTP, and you can remove us any time.",
+                "Our team can fill every form for you — you only share documents and read out the OTP once when the account is opened.",
+              ].map((t) => <li key={t} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-pos" />{t}</li>)}
+            </ul>
+          </div>
+          <div className="rounded-2xl bg-raised p-5">
+            <p className="text-[14px] font-semibold">No GST yet?</p>
+            <p className="mt-1 text-[13.5px] text-muted">You can start on Meesho with a free GST Enrolment ID (selling within your own state), plus Instagram and WhatsApp. We help you get GST for Amazon and Flipkart.</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/seller-checklist" className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-[13px] font-semibold hover:border-accent">Printable checklist <ArrowUpRight className="size-4" /></Link>
+              <a href={waHref(`Hi ${SITE.company}, I'd like to start selling online. Here is what I have ready:`)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-[#0b8a5f] px-4 py-2 text-[13px] font-semibold text-white">Send on WhatsApp <ArrowRight className="size-4" /></a>
+            </div>
+          </div>
         </div>
       </Reveal>
     </section>

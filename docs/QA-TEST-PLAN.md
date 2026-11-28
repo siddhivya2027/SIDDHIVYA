@@ -38,6 +38,18 @@ Use two browsers (or one normal + one private window): **Browser A = team**, **B
 | P6 | Seller login → open product → Ask for changes with a note | Team sees "Changes asked" + note; Telegram message if bot is set | |
 | P7 | Seller login → Approve | Approved with code; ONE CLICK becomes available to the team | |
 
+## 2b. Seller onboarding checklist
+
+| ID | Steps | Expected | ✔ |
+|---|---|---|---|
+| K1 | Sellers → click "Checklist x/8" on a seller | Pop-up lists all 8 items with ✓ / ○ and why each is needed | |
+| K2 | Type the agency number (+91 90636 16726) as the seller's WhatsApp on Channels & stock | Red warning "This is the agency's number"; checklist item stays not done | |
+| K3 | Fill GSTIN, PAN, bank, FSSAI, address proof, own-contact tick, team-access tick, add a product with 3 photos | Badge turns green 8/8 | |
+| K4 | Seller without GSTIN → add GST Enrolment ID | GST item done with note "Meesho (own state) only" | |
+| K5 | Checklist → Send on WhatsApp | WhatsApp opens with only the missing items listed | |
+| K6 | Website → menu "What you need" | Scrolls to the 8-item checklist; "Printable checklist" opens /seller-checklist; Print works | |
+| K7 | Website FAQ | Two new answers: whose number is used; starting without GST | |
+
 ## 3. Publishing (needs each seller's real keys)
 
 | ID | Steps | Expected | ✔ |

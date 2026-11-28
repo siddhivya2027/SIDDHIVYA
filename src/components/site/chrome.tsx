@@ -13,7 +13,7 @@ import { CALC_GROUPS, calcHref } from "./fee-calculators";
 import { useScrolled } from "./use-browser";
 
 const SOCIAL_LABEL: Record<string, string> = { facebook: "Facebook", instagram: "Instagram", linkedin: "LinkedIn", youtube: "YouTube", x: "X" };
-const NAV = [["#listing-check", "Free listing check"], ["#platform", "Seller dashboard"], ["#pricing", "Plans"], ["#contact", "Contact"]] as const;
+const NAV = [["#listing-check", "Free listing check"], ["#checklist", "What you need"], ["#platform", "Seller dashboard"], ["#pricing", "Plans"], ["#contact", "Contact"]] as const;
 
 function CalculatorsMenu() {
   const [group, setGroup] = React.useState(0);

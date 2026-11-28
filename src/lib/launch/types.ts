@@ -113,6 +113,12 @@ export interface SellerSetup {
   bankVerified: boolean;
   pickupPincode: string;
   accounts: Partial<Record<ChannelId, AccountState>>;
+  /** Onboarding checklist extras (all optional so older records stay valid). */
+  enrolmentId?: string; // GST Enrolment ID — Meesho-only start without GSTIN
+  addressProof?: boolean;
+  ownContactConfirmed?: boolean; // accounts use the SELLER's own mobile + email, not the agency's
+  photosReady?: boolean;
+  teamAccess?: boolean; // seller invited our team as a user on the marketplaces
 }
 
 export interface AlertRules { lowStockUnits: number; dailyReport: boolean; reportHour: number; onOrder: boolean; onApproval: boolean; lastDailyReport?: string }

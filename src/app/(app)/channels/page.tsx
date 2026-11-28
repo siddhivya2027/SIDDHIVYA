@@ -10,6 +10,7 @@ import { CHANNELS, KIND_LABEL } from "@/lib/launch/channels";
 import { writeListings } from "@/lib/launch/engine";
 import { manualToOrders, sampleOrders, unitsSold, type Order } from "@/lib/launch/orders";
 import { LIVE } from "@/lib/live/mode";
+import { sameNumber } from "@/lib/launch/onboarding";
 import { useLiveOrders } from "@/lib/live/orders";
 import { SellerKeys } from "@/components/live/seller-keys";
 import { publishEverywhere } from "@/lib/launch/publish-client";
@@ -61,6 +62,7 @@ export default function ChannelsPage() {
   const manualAll = useStore((s) => s.manualOrders);
   const orders = React.useMemo(() => [...liveOrders, ...manualToOrders(manualAll)], [liveOrders, manualAll]);
   const setup = useStore((s) => s.sellerSetup[seller]) ?? emptySetup();
+  const agencyNo = SITE.contact.phones.some((ph) => sameNumber(ph, setup.phone));
   const launches = useStore((s) => s.launches).filter((l) => l.clientId === seller);
   const up = <K extends keyof typeof setup>(k: K, v: (typeof setup)[K]) => setSellerSetup(seller, (s) => ({ ...s, [k]: v }));
   const kinds: ChannelKind[] = ["marketplace", "quick", "social", "search"];
@@ -98,14 +100,19 @@ export default function ChannelsPage() {
         <Card>
           <CardHeader title={`What ${sellers.find((c) => c.id === seller)?.name ?? "the seller"} needs once`} subtitle="Filled once per seller. One-Click Launch checks these before anything goes live." />
           <div className="grid gap-3 px-5 pb-5 sm:grid-cols-2">
-            <Field label="WhatsApp number (with 91)"><Input inputMode="tel" value={setup.phone} onChange={(e) => up("phone", e.target.value.replace(/[^\d]/g, ""))} /></Field>
+            <Field label="Seller's own WhatsApp number (with 91)" hint={agencyNo ? "⚠ This is the agency's number. Use the seller's own mobile." : "The seller's own mobile — never the agency's."}><Input inputMode="tel" value={setup.phone} onChange={(e) => up("phone", e.target.value.replace(/[^\d]/g, ""))} className={agencyNo ? "border-neg" : undefined} /></Field>
             <Field label="Telegram chat ID" hint="For the seller's own alerts. See Alerts & offers."><Input value={setup.telegramChatId} onChange={(e) => up("telegramChatId", e.target.value.trim())} /></Field>
             <Field label="FSSAI licence number"><Input inputMode="numeric" value={setup.fssaiNumber} onChange={(e) => up("fssaiNumber", e.target.value.replace(/[^\d]/g, "").slice(0, 14))} /></Field>
             <Field label="FSSAI valid until"><Input type="date" value={setup.fssaiExpiry} onChange={(e) => up("fssaiExpiry", e.target.value)} /></Field>
             <Field label="GSTIN"><Input value={setup.gstin} onChange={(e) => up("gstin", e.target.value.toUpperCase().slice(0, 15))} /></Field>
             <Field label="PAN"><Input value={setup.pan} onChange={(e) => up("pan", e.target.value.toUpperCase().slice(0, 10))} /></Field>
+            <Field label="GST Enrolment ID (only if no GSTIN yet)" hint="Lets the seller start on Meesho, own state only."><Input value={setup.enrolmentId ?? ""} onChange={(e) => up("enrolmentId", e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, "").slice(0, 15))} /></Field>
             <Field label="Pickup pincode"><Input inputMode="numeric" value={setup.pickupPincode} onChange={(e) => up("pickupPincode", e.target.value.replace(/[^\d]/g, "").slice(0, 6))} /></Field>
             <label className="flex items-center gap-2 self-end pb-2 text-[13px]"><Switch checked={setup.bankVerified} onCheckedChange={(v) => up("bankVerified", v)} label="Bank account verified" />Bank account verified</label>
+            <label className="flex items-center gap-2 text-[13px]"><Switch checked={!!setup.addressProof} onCheckedChange={(v) => up("addressProof", v)} label="Address proof received" />Shop address proof received</label>
+            <label className="flex items-center gap-2 text-[13px]"><Switch checked={!!setup.photosReady} onCheckedChange={(v) => up("photosReady", v)} label="Product photos received" />3+ product photos received</label>
+            <label className="flex items-center gap-2 text-[13px] sm:col-span-2"><Switch checked={!!setup.ownContactConfirmed} onCheckedChange={(v) => up("ownContactConfirmed", v)} label="Accounts use seller's own mobile and email" />Marketplace accounts use the <b>seller's own</b> mobile and email (not the agency's)</label>
+            <label className="flex items-center gap-2 text-[13px] sm:col-span-2"><Switch checked={!!setup.teamAccess} onCheckedChange={(v) => up("teamAccess", v)} label="Team added as user" />Seller has added our team as a user on Amazon / Flipkart (no password sharing)</label>
             <div className="sm:col-span-2">
               <p className="mb-1.5 text-[12px] font-medium text-muted">Seller accounts on each app</p>
               <div className="grid gap-2 sm:grid-cols-2">

@@ -12,9 +12,9 @@ export const SITE = {
     /** Agency email — empty for now, so every email link stays hidden until it is filled in. */
     email: "",
     /** Replace with the agency's new SIM number once it is active. */
-    phones: ["+91 80722 76620"],
+    phones: ["+91 90636 16726"],
     /** Digits only, with country code. Used for the WhatsApp button and the sticky bar. */
-    whatsapp: "918072276620",
+    whatsapp: "919063616726",
     whatsappChannel: "", // e.g. https://whatsapp.com/channel/...
   },
 

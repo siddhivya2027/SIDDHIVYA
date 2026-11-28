@@ -6,7 +6,7 @@ import { ROYAL } from "./site-fonts";
 import { EnquiryForm, EnquiryModal } from "@/components/site/enquiry";
 import { FeeCalculatorModal } from "@/components/site/fee-calculators";
 import { ListingChecker } from "@/components/site/listing-checker";
-import { ChannelMarquee, CtaBand, FactsBand, Hero, Portfolio, Reveal, SectionHead, SellerDashboard, SellerPlans, Services, SocialSection, Strategy, ToolsGrid, WhyUs } from "@/components/site/sections";
+import { ChannelMarquee, CtaBand, FactsBand, Hero, Portfolio, Reveal, SectionHead, SellerChecklistSection, SellerDashboard, SellerPlans, Services, SocialSection, Strategy, ToolsGrid, WhyUs } from "@/components/site/sections";
 import { hasEmail, SITE, socialLinks } from "@/config/site";
 import { CursorGlow } from "@/components/site/motion";
 
@@ -19,6 +19,8 @@ export const metadata: Metadata = {
 const FAQ = [
   ["Which marketplaces do you work on?", "Amazon, Flipkart, Myntra and Meesho, plus Facebook, Instagram and WhatsApp for ads and posts. Quick-commerce apps like Blinkit and Zepto on request."],
   ["Do I have to give you my account password?", "No. Your seller accounts stay in your name. You add us as a user with limited permissions from your seller dashboard, and you can remove us any time."],
+  ["Whose phone number and email are used for my Amazon or Flipkart account?", "Yours. Each marketplace account is opened in your own name, with your own mobile number, email, GST, PAN and bank account, so the shop and the money are fully yours. We only get added as a user from your seller panel — you never share your password or OTP."],
+  ["Can I start without GST?", "Yes, on Meesho: with a free GST Enrolment ID you can sell within your own state. Amazon and Flipkart need a GSTIN for most products, including food — we help you get it."],
   ["How soon will I see results?", "Listing fixes often show within 2–4 weeks. Ads start bringing orders as soon as they go live, and we tune them every week. Your dashboard shows the numbers as they come in."],
   ["What does the seller dashboard show?", "Sales, orders, ad spend, ad return and stock for each marketplace, the photos and ads waiting for your approval, and your monthly reports. The preview on this site uses sample data."],
   ["Are the fee calculators exact?", "They use the latest public fee rules we could verify (November 2026) and show their sources. Marketplaces change fees often, so every rate can be edited to match your seller dashboard."],
@@ -63,6 +65,7 @@ export default function Home() {
         <SellerDashboard />
         <SocialSection />
         <Portfolio />
+        <SellerChecklistSection />
         <SellerPlans />
 
         {/* FAQ */}

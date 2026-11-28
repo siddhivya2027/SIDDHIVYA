@@ -1,6 +1,6 @@
 # SIDDHIVYA — QA report
 
-**Date run:** 23 Nov 2026 · **Build:** live version with manual backup · **Result: 57 of 57 automatic checks passed.**
+**Date run:** 28 Nov 2026 · **Build:** live version with manual backup + seller onboarding checklist · **Result: 65 of 65 automatic checks passed.**
 
 Run it yourself any time:
 
@@ -16,6 +16,7 @@ npm install && npm run qa
 | E — Product engine | 16 | Listing for all 10 channels; titles within each app's limit; stock split never more than total; edited text never overwritten; profit after fees; ready-check blocks (no name, price, photo, stock, FSSAI, price above MRP, expired FSSAI); 6-month FSSAI warning; captions; FAQ; JSON-LD; AI summary; 5 search scores; ad budget; manual hashtags |
 | M — Manual backup | 10 | Local words from town + nearby places + Telugu names; Amazon search terms always under 250 bytes and without brand/title words; your typed keywords replace automatic ones and can be cleared; "customers not coming" rule; playbook complete with no blank values |
 | O — Orders, money, files | 10 | Hand orders (direct = paid same day; app = app's payout days); stock sold counts hand orders; settlement CSV import (quotes, commas, bad rows, missing payout column); CSV safety; Meesho/quick-app upload sheets; Google Merchant feed |
+| C — Seller onboarding checklist | 8 | 8 items shared by website and software; agency number refused as a seller's number; GSTIN / Enrolment ID / PAN / FSSAI checks; photos; WhatsApp message lists only missing items and says accounts stay in the seller's name |
 | S — Security | 7 | Passwords scrambled (scrypt, salted); temporary passwords; cookie flags; AES-256-GCM key locking (tamper and wrong-key fail); signed approval links (changed price / expired refused); receipt codes; sellers can never read FSSAI/GST/phone, playbook, settings, leads |
 
 ## Bug found by the tests and fixed
@@ -73,6 +74,14 @@ npm install && npm run qa
 ✔ M08 playbook: unique steps, every group filled, every step has steps to follow
 ✔ M09 playbook messages carry the product, town, price and order places
 ✔ M10 playbook works for a seller with no phone, town or channels yet
+✔ C01 checklist has 8 items with unique ids, same list for website and software
+✔ C02 a fully ready seller scores 8/8
+✔ C03 the agency's own number is refused as the seller's number
+✔ C04 own contact needs phone, email AND the confirmation tick
+✔ C05 GST: valid GSTIN, or Enrolment ID with a warning that Amazon/Flipkart still need GSTIN
+✔ C06 PAN format and FSSAI (14 digits, not expired; skipped for non-food)
+✔ C07 photos count from products, or the manual tick
+✔ C08 WhatsApp message lists only what is missing and says accounts stay in the seller's name
 ✔ O01 hand order (direct WhatsApp/phone) is paid the same day, full amount
 ✔ O02 hand order from an app follows that app's payout days, minus fees
 ✔ O03 units sold counts hand orders for the right product only
@@ -90,12 +99,12 @@ npm install && npm run qa
 ✔ S05 approval link: signed, can't be changed, expires
 ✔ S06 approval receipt code proves the decision came through the server
 ✔ S07 sellers can never read setup (FSSAI/GST/phone), playbook, settings, leads or logs
-ℹ tests 57
+ℹ tests 65
 ℹ suites 0
-ℹ pass 57
+ℹ pass 65
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 1988.932084
+ℹ duration_ms 1475.89901
 ```
